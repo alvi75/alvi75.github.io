@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%) !important; color: #e8e8e8 !important; }
+    #navbar { background: rgba(20, 20, 20, 0.95) !important; backdrop-filter: blur(10px) !important; border-bottom: 1px solid rgba(251, 191, 36, 0.1) !important; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important; }
+    .nav-link, .navbar .nav-link { color: #fbbf24 !important; }
+    a { color: #fbbf24 !important; }
+    h1, h2, h3, h4, h5, h6 { color: #ffffff !important; font-weight: 700 !important; }
+  </style>
+  <title>Multi-Task PEFT for Code</title>
+</head>
+<body>
+  <nav id="navbar" class="navbar fixed-top navbar-expand-md z-depth-1 navbar-dark">
+    <div class="container-fluid p-0">
+      <a class="navbar-brand title" href="/"><span class="font-weight-bold">Zahidul</span> Haque</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item"><a class="nav-link" href="/">about</a></li>
+          <li class="nav-item"><a class="nav-link" href="/cv/">cv</a></li>
+          <li class="nav-item"><a class="nav-link" href="/projects/">projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="/publications/">publications</a></li>
+          <li class="nav-item"><a class="nav-link" href="/teaching/">teaching</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="content" style="padding-top: 100px; max-width: 1000px; margin: 0 auto;">
+    <h1>Parameter-Efficient Multi-Task Fine-Tuning in Code-Related Tasks</h1>
+    <h5>Investigating QLoRA fine-tuning across code generation, summarization, and translation</h5>
+    <p>This work presents the first comprehensive evaluation of Multi-task QLoRA across code generation, translation, and summarization, examining both functional correctness and code quality with Qwen2.5-Coder models (0.5B, 1.5B, 3B). Multi-task QLoRA achieves competitive performance versus Single-task QLoRA while training a unified model.</p>
+    <p>Key findings include:</p>
+    <ul style="color: #e8e8e8;">
+      <li>32.07% Java pass@1 versus 29.89% Single-task (+2.18 points)</li>
+      <li>29.90% Python summarization BLEU versus 23.31% (+28.3% relative)</li>
+      <li>32.0% lower Python complexity and 6.3% fewer Java PMD violations at 3B</li>
+      <li>Larger models demonstrate superior ability to balance multiple objectives within QLoRA's parameter-efficient framework</li>
+    </ul>
+    <p><a href="https://arxiv.org/html/2601.15094v1" target="_blank">Read the paper</a> | <a href="https://github.com/alvi75/MultiTask-QLoRA-NFAnalysis" target="_blank">View code</a></p>
+  </div>
+</body>
+</html>
