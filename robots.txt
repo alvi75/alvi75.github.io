@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+Disallow: /projects_backup/
+
+Sitemap: https://alvi75.github.io/sitemap.xml

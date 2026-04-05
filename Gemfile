@@ -9,4 +9,3 @@ group :jekyll_plugins do
 end
 gem "csv"
 gem "webrick"
-gem "webrick"
