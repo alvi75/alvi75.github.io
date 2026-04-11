@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <style>
+    body { background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%) !important; color: #e8e8e8 !important; }
+    #navbar { background: rgba(20, 20, 20, 0.95) !important; backdrop-filter: blur(10px) !important; border-bottom: 1px solid rgba(251, 191, 36, 0.1) !important; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important; }
+    .nav-link, .navbar .nav-link { color: #fbbf24 !important; transition: all 0.3s ease !important; }
+    .nav-link:hover { color: hsl(46, 97%, 65%) !important; }
+    .nav-link.active, .nav-item.navbar-active .nav-link { color: #fcd34d !important; font-weight: 700 !important; }
+    a { color: #fbbf24 !important; }
+    a:hover { color: #fcd34d !important; }
+    h1, h2, h3, h4, h5, h6 { color: #ffffff !important; font-weight: 700 !important; }
+    .navbar-brand.title { color: #fbbf24 !important; font-weight: 400 !important; }
+    .navbar-brand.title .font-weight-bold { color: #fbbf24 !important; font-weight: 700 !important; }
+
+    /* Article Layout */
+    .article-container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .article-header {
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid rgba(251, 191, 36, 0.15);
+    }
+
+    .article-header h1 {
+      font-family: 'Roboto Slab', serif !important;
+      font-size: 2.2rem !important;
+      line-height: 1.25 !important;
+      margin-bottom: 12px !important;
+    }
+
+    .article-subtitle {
+      font-family: 'Roboto', sans-serif;
+      font-size: 1.05rem;
+      color: #aaa !important;
+      line-height: 1.5;
+      margin-bottom: 16px;
+      font-weight: 300;
+    }
+
+    .article-meta {
+      font-size: 0.85rem;
+      color: #777 !important;
+      font-weight: 400;
+    }
+
+    /* Serif reading font for body text */
+    .article-body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      font-size: 1.05rem;
+      line-height: 1.75;
+      color: #d4d4d4 !important;
+    }
+
+    .article-body h2 {
+      font-family: 'Roboto Slab', serif !important;
+      font-size: 1.55rem !important;
+      margin-top: 48px !important;
+      margin-bottom: 20px !important;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(251, 191, 36, 0.1);
+    }
+
+    .article-body p {
+      margin-bottom: 1.2em;
+      color: #d4d4d4 !important;
+    }
+
+    .article-body ul, .article-body ol {
+      margin-bottom: 1.2em;
+      padding-left: 1.5em;
+    }
+
+    .article-body li {
+      margin-bottom: 0.4em;
+      color: #d4d4d4 !important;
+    }
+
+    .article-body strong {
+      color: #ffffff !important;
+    }
+
+    /* Code blocks */
+    .article-body pre {
+      background: rgba(15, 15, 15, 0.9) !important;
+      border: 1px solid rgba(251, 191, 36, 0.1);
+      border-radius: 4px;
+      padding: 16px 20px;
+      margin: 20px 0;
+      overflow-x: auto;
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+
+    .article-body pre code {
+      font-family: 'Source Code Pro', 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
+      color: #d4d4d4 !important;
+      background: transparent !important;
+      border: none !important;
+      padding: 0 !important;
+    }
+
+    .article-body code {
+      font-family: 'Source Code Pro', 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
+      font-size: 0.88em;
+      background: rgba(30, 30, 30, 0.8) !important;
+      color: #fbbf24 !important;
+      padding: 2px 6px;
+      border-radius: 3px;
+      border: 1px solid rgba(251, 191, 36, 0.1) !important;
+    }
+
+    /* Inline code example blocks (non-highlighted) */
+    .code-example {
+      background: rgba(15, 15, 15, 0.9) !important;
+      border: 1px solid rgba(251, 191, 36, 0.1);
+      border-radius: 4px;
+      padding: 16px 20px;
+      margin: 20px 0;
+      overflow-x: auto;
+      font-family: 'Source Code Pro', 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
+      font-size: 0.88rem;
+      line-height: 1.55;
+      color: #d4d4d4 !important;
+      white-space: pre;
+    }
+
+    /* Callout boxes */
+    .callout {
+      border-radius: 4px;
+      padding: 16px 20px;
+      margin: 24px 0;
+      font-size: 0.95rem;
+    }
+
+    .callout p:last-child {
+      margin-bottom: 0;
+    }
+
+    .callout-label {
+      font-family: 'Roboto', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .callout-insight {
+      background: rgba(59, 130, 246, 0.08) !important;
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      border-left: 3px solid #3b82f6;
+    }
+
+    .callout-insight .callout-label {
+      color: #3b82f6 !important;
+    }
+
+    .callout-warning {
+      background: rgba(245, 158, 11, 0.08) !important;
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-left: 3px solid #f59e0b;
+    }
+
+    .callout-warning .callout-label {
+      color: #f59e0b !important;
+    }
+
+    .callout-detail {
+      background: rgba(147, 51, 234, 0.08) !important;
+      border: 1px solid rgba(147, 51, 234, 0.25);
+      border-left: 3px solid #9333ea;
+    }
+
+    .callout-detail .callout-label {
+      color: #9333ea !important;
+    }
+
+    .callout-critical {
+      background: rgba(239, 68, 68, 0.08) !important;
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      border-left: 3px solid #ef4444;
+    }
+
+    .callout-critical .callout-label {
+      color: #ef4444 !important;
+    }
+
+    /* Table of Contents */
+    .toc {
+      background: rgba(30, 30, 30, 0.6) !important;
+      border: 1px solid rgba(251, 191, 36, 0.15);
+      border-radius: 4px;
+      padding: 20px 24px;
+      margin: 0 0 40px 0;
+    }
+
+    .toc h3 {
+      font-family: 'Roboto', sans-serif !important;
+      font-size: 0.9rem !important;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #fbbf24 !important;
+      margin-bottom: 12px !important;
+    }
+
+    .toc ol {
+      padding-left: 1.2em;
+      margin-bottom: 0;
+    }
+
+    .toc li {
+      font-family: 'Roboto', sans-serif;
+      font-size: 0.9rem;
+      line-height: 1.8;
+      color: #aaa !important;
+    }
+
+    .toc a {
+      color: #d4d4d4 !important;
+      text-decoration: none;
+    }
+
+    .toc a:hover {
+      color: #fbbf24 !important;
+    }
+
+    /* Table */
+    .article-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-family: 'Roboto', sans-serif;
+      font-size: 0.9rem;
+    }
+
+    .article-body th {
+      background: rgba(30, 30, 30, 0.8) !important;
+      color: #fbbf24 !important;
+      font-weight: 600;
+      padding: 8px 12px;
+      border: 1px solid rgba(251, 191, 36, 0.15);
+      text-align: left;
+    }
+
+    .article-body td {
+      padding: 8px 12px;
+      border: 1px solid rgba(251, 191, 36, 0.1);
+      color: #d4d4d4 !important;
+    }
+
+    .article-body tr:nth-child(even) td {
+      background: rgba(25, 25, 25, 0.5) !important;
+    }
+
+    /* Back link */
+    .back-link {
+      display: inline-block;
+      margin-bottom: 24px;
+      font-family: 'Roboto', sans-serif;
+      font-size: 0.85rem;
+    }
+  </style>
+
+  <title>Pre-training T5 for Code | Zahidul Haque Alvi</title>
+  <meta name="description" content="A conceptual guide to pre-training a T5 model from scratch for code.">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/zh_icon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/zh_icon.png">
+  <link rel="shortcut icon" href="/assets/img/zh_icon.png">
+
+  <!-- Fonts and Icons -->
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons" />
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
+
+  <!-- CSS Files -->
+  <link rel="stylesheet" href="/assets/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/academicons.min.css">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="canonical" href="/blog/pretraining-t5-for-code.html">
+</head>
+<body>
+  <!-- Header -->
+  <nav id="navbar" class="navbar fixed-top navbar-expand-md z-depth-1 navbar-dark">
+    <div class="container-fluid p-0">
+        <a class="navbar-brand title" href="/"><span class="font-weight-bold">Zahidul</span> Haque</a>
+      <button class="navbar-toggler ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse text-right" id="navbarNav">
+        <ul class="navbar-nav ml-auto flex-nowrap">
+          <li class="nav-item ">
+            <a class="nav-link" href="/">About</a>
+          </li>
+          <li class="nav-item ">
+            <a class="nav-link" href="/cv/">CV</a>
+          </li>
+          <li class="nav-item ">
+            <a class="nav-link" href="/projects/">Projects</a>
+          </li>
+          <li class="nav-item ">
+            <a class="nav-link" href="/publications/">Publications</a>
+          </li>
+          <li class="nav-item ">
+            <a class="nav-link" href="/teaching/">Teaching</a>
+          </li>
+          <li class="nav-item navbar-active font-weight-bold">
+            <a class="nav-link" href="/blog/">Blog <span class="sr-only">(current)</span></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Scrolling Progress Bar -->
+  <progress id="progress" value="0">
+    <div class="progress-container">
+      <span class="progress-bar"></span>
+    </div>
+  </progress>
+
+  <!-- Content -->
+  <div class="content">
+    <div class="article-container">
+
+      <a class="back-link" href="/blog/">&larr; Back to Blog</a>
+
+      <!-- Article Header -->
+      <div class="article-header">
+        <h1>Pre-training T5 for Code: A Step-by-Step Guide</h1>
+        <p class="article-subtitle">A conceptual guide to pre-training a T5 model from scratch for code &mdash; covering tokenizer choices, span corruption, embedding initialization, and checkpoint management.</p>
+        <p class="article-meta">Md. Zahidul Haque Alvi &middot; April 2026 &middot; AURA Lab &mdash; William &amp; Mary</p>
+      </div>
+
+      <!-- Table of Contents -->
+      <div class="toc">
+        <h3>Contents</h3>
+        <ol>
+          <li><a href="#why-pretrain">Why Pre-train From Scratch?</a></li>
+          <li><a href="#tokenizer">What is a Tokenizer and Why Does It Matter?</a></li>
+          <li><a href="#training-tokenizer">Training Your Own Tokenizer</a></li>
+          <li><a href="#model-architecture">Defining the Model Architecture</a></li>
+          <li><a href="#embedding">Embedding Initialization: Why Random?</a></li>
+          <li><a href="#span-corruption">Span Corruption: How T5 Learns</a></li>
+          <li><a href="#training-loop">The Training Loop: Save Best, No Early Stopping</a></li>
+          <li><a href="#fine-tuning">What Happens Next: Fine-tuning</a></li>
+        </ol>
+      </div>
+
+      <!-- Article Body -->
+      <div class="article-body">
+
+        <!-- Section 1 -->
+        <h2 id="why-pretrain">1. Why Pre-train From Scratch?</h2>
+
+        <p>Pre-training means training a model on a large corpus of unlabeled data so it learns general patterns &mdash; syntactic structure, common idioms, token relationships &mdash; before being specialized on a downstream task. For code, this means learning what well-formed code looks like before learning to fix bugs, summarize functions, or detect vulnerabilities.</p>
+
+        <p>Models like CodeT5 already come pre-trained. So why do it yourself? Because understanding the full pipeline &mdash; choosing a tokenizer, defining the architecture, implementing span corruption, managing checkpoints &mdash; is how you build the intuition to use, debug, and improve these systems.</p>
+
+        <p>The pipeline we walk through in this guide:</p>
+        <ol>
+          <li>Train or load a tokenizer</li>
+          <li>Define a T5-small model from scratch</li>
+          <li>Pre-train with span corruption on code</li>
+          <li>Save the best checkpoint for downstream fine-tuning</li>
+        </ol>
+
+        <p>Each step involves design decisions. This guide explains the reasoning behind each one.</p>
+
+        <!-- Section 2 -->
+        <h2 id="tokenizer">2. What is a Tokenizer and Why Does It Matter?</h2>
+
+        <p>A tokenizer converts raw text into token IDs the model can process. It determines how code is broken into pieces &mdash; and those pieces determine what patterns the model can learn.</p>
+
+        <p>Subword tokenizers (BPE, Unigram) split text into a mix of whole words and subword pieces. Common tokens stay whole, rare ones get split:</p>
+
+<div class="code-example">"IOException" in a code-trained tokenizer &rarr; ["IOException"]             (1 token)
+"IOException" in an English-trained tokenizer &rarr; ["IO", "Ex", "ception"]  (3 tokens)</div>
+
+        <p>The tokenizer's vocabulary is the set of all tokens it knows. You set the vocabulary size before training &mdash; the algorithm then picks the best N subword pieces from your data.</p>
+
+        <div class="callout callout-insight">
+          <div class="callout-label">Key Insight</div>
+          <p>The tokenizer is independent from the model architecture. T5 doesn't care which tokenizer you use &mdash; it just needs a vocabulary size to set the embedding layer shape, and token IDs for pad, eos, and bos. You can pair any tokenizer with the T5 architecture.</p>
+        </div>
+
+        <p>Two tokenizer families you should know:</p>
+
+        <p><strong>SentencePiece</strong> is a library by Google that trains tokenizers directly on raw text. It supports two algorithms: BPE (merge frequent pairs) and Unigram (start large, remove least useful tokens). The original T5 used SentencePiece with the Unigram algorithm, trained on the C4 English corpus (32K vocab).</p>
+
+        <p><strong>RoBERTa's tokenizer</strong> uses Byte-Pair Encoding. When trained on code (as in CodeBERT/CodeT5), it learns merge rules specific to programming constructs &mdash; <code>String</code>, <code>return</code>, <code>public</code> stay as single tokens because they appeared millions of times in the training data.</p>
+
+        <p>Here's how the same code gets tokenized differently:</p>
+
+<pre><code class="python">code = "def sort(arr): return sorted(arr)"
+
+# SentencePiece (Unigram, trained on your code corpus)
+sp_tokens = sp_tokenizer.tokenize(code)
+# &rarr; ['&#9601;def', '&#9601;sort', '(', 'arr', '):', '&#9601;return', '&#9601;sorted', '(', 'arr', ')']
+
+# RoBERTa (BPE, from microsoft/codebert-base)
+rob_tokens = rob_tokenizer.tokenize(code)
+# &rarr; ['def', '&#288;sort', '(', 'arr', '):', '&#288;return', '&#288;sorted', '(', 'arr', ')']</code></pre>
+
+        <p>The <code>&#9601;</code> (SentencePiece) and <code>&#288;</code> (RoBERTa) characters mark word boundaries &mdash; they indicate &ldquo;this token starts a new word.&rdquo; Different notation, same concept.</p>
+
+        <!-- Section 3 -->
+        <h2 id="training-tokenizer">3. Training Your Own Tokenizer</h2>
+
+        <p>To train your own tokenizer, you need: (1) a corpus, (2) a target vocabulary size, and (3) an algorithm choice. SentencePiece handles all three:</p>
+
+<pre><code class="python">import sentencepiece as spm
+
+sentinel_tokens = [f"&lt;extra_id_{i}&gt;" for i in range(100)]
+user_defined_symbols = ",".join(sentinel_tokens)
+
+spm.SentencePieceTrainer.train(
+    input=corpus_file,            # one function per line
+    model_prefix=model_prefix,    # output file prefix
+    vocab_size=16384,             # target vocabulary size
+    hard_vocab_limit=False,       # allow slight deviation
+    model_type="unigram",         # Unigram algorithm
+    pad_id=0,                     # &lt;pad&gt; = ID 0
+    eos_id=1,                     # &lt;/s&gt;  = ID 1
+    unk_id=2,                     # &lt;unk&gt; = ID 2
+    bos_id=-1,                    # T5 doesn't use BOS
+    user_defined_symbols=user_defined_symbols,
+    character_coverage=1.0,
+)</code></pre>
+
+        <p>This outputs two files: <code>sp_code.model</code> (the tokenizer) and <code>sp_code.vocab</code> (the vocabulary).</p>
+
+        <div class="callout callout-warning">
+          <div class="callout-label">Warning</div>
+          <p>The <code>user_defined_symbols</code> parameter is critical. T5's span corruption uses sentinel tokens <code>&lt;extra_id_0&gt;</code> through <code>&lt;extra_id_99&gt;</code> to mark masked spans. If you forget to include them, the tokenizer won't recognize them and span corruption will silently break.</p>
+        </div>
+
+        <p><strong>How to choose vocabulary size.</strong> Vocabulary size controls how many unique tokens the tokenizer can represent. The tradeoff: bigger vocab means shorter sequences (fewer token splits) but more rare tokens whose embeddings never get learned well. Smaller vocab means longer sequences but every token appears often enough to get a meaningful embedding.</p>
+
+        <p>For a corpus of ~50K functions, 16K is a reasonable vocabulary size. At 50K+ vocabulary, you'd have thousands of tokens the model barely sees &mdash; their embeddings stay random noise even after training. At 8K, common constructs get split into too many pieces, making sequences unnecessarily long. 16K&ndash;32K is the sweet spot for corpora of this size.</p>
+
+        <p>For reference: T5 used 32K (trained on 750GB of English text), RoBERTa/CodeBERT uses 50K (trained on billions of tokens). They can afford larger vocabularies because their training data is orders of magnitude bigger.</p>
+
+        <p>Loading a trained SentencePiece model as a HuggingFace tokenizer requires converting through the <code>tokenizers</code> library:</p>
+
+<pre><code class="python">import sentencepiece as spm
+from tokenizers import Tokenizer
+from tokenizers.models import Unigram
+from tokenizers.pre_tokenizers import Metaspace
+from tokenizers.decoders import Metaspace as MetaspaceDecoder
+from transformers import PreTrainedTokenizerFast
+
+sp = spm.SentencePieceProcessor()
+sp.Load(model_path)
+
+vocab = [(sp.IdToPiece(i), sp.GetScore(i)) for i in range(sp.GetPieceSize())]
+
+tokenizer_obj = Tokenizer(Unigram(vocab, unk_id=2))
+tokenizer_obj.pre_tokenizer = Metaspace()
+tokenizer_obj.decoder = MetaspaceDecoder()
+
+sentinel_tokens = [f"&lt;extra_id_{i}&gt;" for i in range(100)]
+
+tokenizer = PreTrainedTokenizerFast(
+    tokenizer_object=tokenizer_obj,
+    eos_token="&lt;/s&gt;",
+    unk_token="&lt;unk&gt;",
+    pad_token="&lt;pad&gt;",
+    additional_special_tokens=sentinel_tokens,
+)</code></pre>
+
+        <p>Using a pre-trained RoBERTa tokenizer is simpler &mdash; it's already in HuggingFace format. You just need to add sentinel tokens:</p>
+
+<pre><code class="python">from transformers import RobertaTokenizer
+
+tokenizer = RobertaTokenizer.from_pretrained("microsoft/codebert-base")
+sentinel_tokens = [f"&lt;extra_id_{i}&gt;" for i in range(100)]
+tokenizer.add_tokens(sentinel_tokens, special_tokens=True)
+# Vocab grows from 50,265 &rarr; 50,365</code></pre>
+
+        <!-- Section 4 -->
+        <h2 id="model-architecture">4. Defining the Model Architecture</h2>
+
+        <p>We use T5-small (~60M parameters). Here are the T5 sizes for reference:</p>
+
+        <table>
+          <thead>
+            <tr><th>Model</th><th>d_model</th><th>Layers (enc+dec)</th><th>Heads</th><th>Parameters</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>T5-small</td><td>512</td><td>6+6</td><td>8</td><td>~60M</td></tr>
+            <tr><td>T5-base</td><td>768</td><td>12+12</td><td>12</td><td>~220M</td></tr>
+            <tr><td>T5-large</td><td>1024</td><td>24+24</td><td>16</td><td>~770M</td></tr>
+          </tbody>
+        </table>
+
+        <p>We define the config manually rather than borrowing from a checkpoint. This follows the approach in Mastropaolo et al. (ASE 2023), where each architectural parameter is set explicitly:</p>
+
+<pre><code class="python">from transformers import T5Config, T5ForConditionalGeneration
+
+t5_config = T5Config(
+    decoder_start_token_id=tokenizer.convert_tokens_to_ids(["&lt;pad&gt;"])[0]
+    if "&lt;pad&gt;" in tokenizer.get_vocab() else 0
+)
+t5_config.d_model = 512          # embedding and hidden state dimension
+t5_config.d_ff = 2048            # feed-forward layer dimension
+t5_config.d_kv = 64              # key/value projection dimension
+t5_config.num_heads = 8          # attention heads
+t5_config.num_layers = 6         # encoder layers
+t5_config.num_decoder_layers = 6 # decoder layers
+t5_config.vocab_size = len(tokenizer)
+
+model = T5ForConditionalGeneration(config=t5_config)
+model.resize_token_embeddings(len(tokenizer))</code></pre>
+
+        <p>Why manual config instead of <code>AutoConfig.from_pretrained()</code>? Both produce a model from scratch &mdash; neither loads pre-trained weights. But <code>AutoConfig</code> borrows the shape from an existing checkpoint, which can be confusing. Manual config makes every decision visible and intentional.</p>
+
+        <div class="callout callout-detail">
+          <div class="callout-label">Key Detail</div>
+          <p><code>resize_token_embeddings(len(tokenizer))</code> ensures the embedding matrix has exactly one row per token. Without this call, the model will crash when it encounters token IDs beyond the default vocabulary size.</p>
+        </div>
+
+        <p>The embedding layer's shape depends on your tokenizer:</p>
+
+<pre><code class="python">print(model.shared.weight.shape)
+# SentencePiece: torch.Size([16384, 512])  &mdash; 16K tokens &times; 512 dims
+# RoBERTa:      torch.Size([50365, 512])  &mdash; ~50K tokens &times; 512 dims</code></pre>
+
+        <p>Same architecture, different embedding sizes. The rest of the model is identical.</p>
+
+        <!-- Section 5 -->
+        <h2 id="embedding">5. Embedding Initialization: Why Random?</h2>
+
+        <p>The embedding layer starts with random values. During pre-training, the model updates these values to capture meaningful token relationships. After enough training, the embeddings encode syntactic and semantic patterns.</p>
+
+        <p>You might wonder: why not initialize with pre-trained embeddings from RoBERTa or Word2Vec?</p>
+
+        <p><strong>Dimension mismatch.</strong> RoBERTa uses 768-dimensional embeddings. T5-small uses 512. You'd need a linear projection (768 &rarr; 512), which loses information:</p>
+
+<pre><code class="python">from transformers import RobertaModel
+roberta = RobertaModel.from_pretrained("microsoft/codebert-base")
+print(roberta.embeddings.word_embeddings.weight.shape)  # torch.Size([50265, 768])
+# Projecting 768 &rarr; 512 = lossy</code></pre>
+
+        <p><strong>Vocabulary mismatch.</strong> If you train your own tokenizer (e.g., SentencePiece), its vocabulary is completely different from RoBERTa's. Token ID 42 in SentencePiece means a different token than ID 42 in RoBERTa. You can't map embeddings across incompatible vocabularies.</p>
+
+        <p><strong>Pre-training overwrites them anyway.</strong> Modern transformer models learn embeddings end-to-end during training. The initial values get overwritten within the first few epochs. What matters is the training data and objective &mdash; not the starting point. This is why T5, CodeT5, GPT, and most modern models all start with random embeddings.</p>
+
+        <div class="callout callout-critical">
+          <div class="callout-label">Critical Rule</div>
+          <p>Whatever embedding the model learns during pre-training carries into fine-tuning automatically. When you save a checkpoint, the embedding is inside it. When you load that checkpoint for fine-tuning, the embedding comes with it. Do NOT reinitialize or swap embeddings between stages &mdash; doing so would destroy everything the model learned.</p>
+        </div>
+
+        <!-- Section 6 -->
+        <h2 id="span-corruption">6. Span Corruption: How T5 Learns</h2>
+
+        <p>Span corruption is T5's pre-training objective. You randomly mask chunks (spans) of the input and make the model predict what was masked.</p>
+
+        <p>Here's a concrete example:</p>
+
+<div class="code-example">Original:  "def sort(arr): return sorted(arr)"
+Token IDs: [def, sort, (, arr, ), :, return, sorted, (, arr, )]
+
+15% of tokens selected &rarr; positions [1, 2, 7]
+Consecutive positions [1, 2] grouped into one span
+
+Corrupted input:
+[def, &lt;extra_id_0&gt;, arr, ), :, return, &lt;extra_id_1&gt;, (, arr, )]
+
+Target (what the model must predict):
+[&lt;extra_id_0&gt;, sort, (, &lt;extra_id_1&gt;, sorted]</div>
+
+        <p>Key points:</p>
+        <ul>
+          <li>Each span is replaced by a unique sentinel token (<code>&lt;extra_id_0&gt;</code>, <code>&lt;extra_id_1&gt;</code>, ...) &mdash; NOT <code>&lt;mask&gt;</code> as in BERT</li>
+          <li>The target contains ONLY the masked content, prefixed by the sentinel that replaced it</li>
+          <li>This makes the target much shorter than the input &mdash; more efficient than predicting the full sequence</li>
+          <li>Corruption is dynamic &mdash; a fresh random mask every time the model sees an example across epochs</li>
+        </ul>
+
+        <p>The metric during pre-training is just loss &mdash; cross-entropy between the model's predictions and the actual masked tokens:</p>
+
+<pre><code class="python">outputs = model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
+loss = outputs.loss  # cross-entropy, computed internally by T5</code></pre>
+
+        <p>No fancy metrics during pre-training. Loss goes down, the model is learning. That's it.</p>
+
+        <p><strong>Building the corruption in code.</strong> First, select random positions and group consecutive ones into spans:</p>
+
+<pre><code class="python">n_mask = max(1, int(n_tokens * self.corruption_rate))  # 15%
+mask_indices = sorted(random.sample(range(n_tokens), n_mask))
+
+spans = []
+current_span = [mask_indices[0]]
+for i in range(1, len(mask_indices)):
+    if mask_indices[i] == mask_indices[i - 1] + 1:
+        current_span.append(mask_indices[i])
+    else:
+        spans.append(current_span)
+        current_span = [mask_indices[i]]
+spans.append(current_span)</code></pre>
+
+        <p>Then build the corrupted input (sentinel replaces each span) and the target (sentinel followed by original tokens):</p>
+
+<pre><code class="python"># Input: replace each span with its sentinel token
+input_ids = []
+prev_span_idx = -1
+for pos, tid in enumerate(token_ids):
+    if pos in mask_set:
+        s_idx = span_map[pos]
+        if s_idx != prev_span_idx:
+            input_ids.append(self.sentinel_ids[s_idx])
+            prev_span_idx = s_idx
+    else:
+        input_ids.append(tid)
+        prev_span_idx = -1
+
+# Target: sentinel followed by the span's original tokens
+target_ids = []
+for span_idx, span in enumerate(spans):
+    target_ids.append(self.sentinel_ids[span_idx])
+    for pos in span:
+        target_ids.append(token_ids[pos])</code></pre>
+
+        <!-- Section 7 -->
+        <h2 id="training-loop">7. The Training Loop: Save Best, No Early Stopping</h2>
+
+        <p>The standard approach for pre-training is to run all epochs and save the best checkpoint by validation loss. We do NOT use early stopping.</p>
+
+        <p><strong>Why not early stopping?</strong> Loss can temporarily increase and come back down. Early stopping quits and misses the recovery:</p>
+
+<div class="code-example">Save best checkpoint approach:
+Epoch 1: loss=5.2 &rarr; save
+Epoch 2: loss=4.1 &rarr; save
+Epoch 3: loss=3.8 &rarr; save (best so far)
+Epoch 4: loss=4.0 &rarr; skip
+Epoch 5: loss=3.7 &rarr; save (new best!)  &larr; would have been missed with early stopping
+
+Early stopping (patience=1):
+Epoch 1: loss=5.2 &rarr; save
+Epoch 2: loss=4.1 &rarr; save
+Epoch 3: loss=3.8 &rarr; save
+Epoch 4: loss=4.0 &rarr; STOP  &larr; missed epoch 5's improvement</div>
+
+        <p>This pattern &mdash; run all epochs, keep the best &mdash; is used in Mastropaolo et al.'s <code>t5-no-pt.py</code> (ASE 2023) and the T5 pre-training repo by manueldeprada.</p>
+
+        <p><strong>The full training loop:</strong></p>
+
+<pre><code class="python">best_loss = float("inf")
+
+for epoch in range(args.epochs):
+    model.train()
+    tr_loss, tr_steps = 0.0, 0
+
+    for step, batch in enumerate(train_dataloader):
+        input_ids, attention_mask, labels = [x.to(args.device) for x in batch]
+
+        outputs = model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
+        loss = outputs.loss
+
+        loss.backward()
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+
+        optimizer.step()
+        scheduler.step()
+        optimizer.zero_grad()
+
+        tr_loss += loss.item()
+        tr_steps += 1
+
+    train_loss = round(tr_loss / tr_steps, 5)
+    eval_loss = evaluate_model(model, eval_dataloader, args.device)</code></pre>
+
+        <p>After each epoch, save if validation loss improved:</p>
+
+<pre><code class="python">    if eval_loss &lt; best_loss:
+        best_loss = eval_loss
+        model_to_save = model.module if hasattr(model, "module") else model
+        model_to_save.save_pretrained(output_dir)
+        tokenizer.save_pretrained(output_dir)
+    # No break &mdash; training continues through all epochs</code></pre>
+
+        <p>Evaluation is just average loss:</p>
+
+<pre><code class="python">def evaluate_model(model, eval_dataloader, device):
+    model.eval()
+    eval_loss, num_batches = 0.0, 0
+    with torch.no_grad():
+        for batch in eval_dataloader:
+            input_ids, attention_mask, labels = [x.to(device) for x in batch]
+            outputs = model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
+            eval_loss += outputs.loss.item()
+            num_batches += 1
+    return round(eval_loss / num_batches, 5)</code></pre>
+
+        <!-- Section 8 -->
+        <h2 id="fine-tuning">8. What Happens Next: Fine-tuning</h2>
+
+        <p>After pre-training, you have a model that understands code structure but has never seen a specific task. Fine-tuning adapts it &mdash; whether for bug fixing, code summarization, vulnerability detection, or any other downstream task.</p>
+
+        <p>Loading is straightforward &mdash; everything carries over from the checkpoint:</p>
+
+<pre><code class="python"># Load the pre-trained model &mdash; weights, embeddings, config all inside
+model = T5ForConditionalGeneration.from_pretrained("checkpoints/checkpoint-best-loss")
+
+# Load the SAME tokenizer used during pre-training
+tokenizer = PreTrainedTokenizerFast.from_pretrained("checkpoints/checkpoint-best-loss")
+# or RobertaTokenizer.from_pretrained(...) if you used RoBERTa</code></pre>
+
+        <div class="callout callout-warning">
+          <div class="callout-label">Warning</div>
+          <p>Do NOT swap tokenizers between pre-training and fine-tuning. The tokenizer defines the vocabulary. The vocabulary defines the embedding. Swapping the tokenizer means every token ID maps to the wrong embedding row &mdash; the model's learned knowledge becomes garbage.</p>
+        </div>
+
+        <p>The fine-tuning objective is different from pre-training:</p>
+        <ul>
+          <li><strong>Pre-training:</strong> span corruption (fill in masked spans)</li>
+          <li><strong>Fine-tuning:</strong> task-specific (e.g., buggy code &rarr; fixed code)</li>
+        </ul>
+
+        <p>But the model architecture and the loss function remain the same &mdash; encoder-decoder T5 with cross-entropy. Only the data and the task change. That's the beauty of pre-training: one model, many downstream applications.</p>
+
+      </div><!-- /article-body -->
+    </div><!-- /article-container -->
+  </div><!-- /content -->
+
+  <!-- Footer -->
+  <footer>
+    &copy; Copyright 2025 Zahidul Haque Alvi -- A special thanks to <a href="https://github.com/eaplatanios/eaplatanios.github.io" target="_blank" rel="noopener noreferrer">Anthony Platanios</a> for making the template publicly available.
+  </footer>
+
+  <!-- Core JavaScript Files -->
+  <script src="/assets/js/jquery.min.js" type="text/javascript"></script>
+  <script src="/assets/js/popper.min.js" type="text/javascript"></script>
+  <script src="/assets/js/bootstrap.min.js" type="text/javascript"></script>
+  <script src="/assets/js/mdb.min.js" type="text/javascript"></script>
+  <script src="/assets/js/common.js"></script>
+
+  <!-- Scrolling Progress Bar -->
+  <script type="text/javascript">
+    $(document).ready(function() {
+      var navbarHeight = $('#navbar').outerHeight(true);
+      $('body').css({ 'padding-top': navbarHeight });
+      $('progress-container').css({ 'padding-top': navbarHeight });
+      var progressBar = $('#progress');
+      progressBar.css({ 'top': navbarHeight });
+      var getMax = function() { return $(document).height() - $(window).height(); }
+      var getValue = function() { return $(window).scrollTop(); }
+      if ('max' in document.createElement('progress')) {
+        progressBar.attr({ max: getMax() });
+        progressBar.attr({ value: getValue() });
+        $(document).on('scroll', function() {
+          progressBar.attr({ value: getValue() });
+        });
+        $(window).resize(function() {
+          var navbarHeight = $('#navbar').outerHeight(true);
+          $('body').css({ 'padding-top': navbarHeight });
+          $('progress-container').css({ 'padding-top': navbarHeight });
+          progressBar.css({ 'top': navbarHeight });
+          progressBar.attr({ max: getMax(), value: getValue() });
+        });
+      } else {
+        var max = getMax(), value, width;
+        var getWidth = function() {
+          value = getValue();
+          width = (value/max) * 100;
+          width = width + '%';
+          return width;
+        }
+        var setWidth = function() { progressBar.css({ width: getWidth() }); };
+        setWidth();
+        $(document).on('scroll', setWidth);
+        $(window).on('resize', function() {
+          max = getMax();
+          setWidth();
+        });
+      }
+    });
+  </script>
+
+  <!-- Code Syntax Highlighting -->
+  <script src="/assets/js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+
+</body>
+</html>

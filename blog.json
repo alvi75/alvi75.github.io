@@ -1,0 +1,10 @@
+[
+  {
+    "title": "Pre-training T5 for Code: A Step-by-Step Guide",
+    "author": "Md. Zahidul Haque Alvi",
+    "date": "April 2026",
+    "venue": "AURA Lab — William & Mary",
+    "description": "A complete walkthrough of pre-training a T5 model from scratch for code tasks — covering tokenizer training, span corruption, embedding initialization, and checkpoint management.",
+    "link": "blog/pretraining-t5-for-code.html"
+  }
+]
