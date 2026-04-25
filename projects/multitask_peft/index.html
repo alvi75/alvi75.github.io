@@ -1,42 +1,662 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
   <style>
     body { background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%) !important; color: #e8e8e8 !important; }
     #navbar { background: rgba(20, 20, 20, 0.95) !important; backdrop-filter: blur(10px) !important; border-bottom: 1px solid rgba(251, 191, 36, 0.1) !important; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important; }
-    .nav-link, .navbar .nav-link { color: #fbbf24 !important; }
+    .nav-link, .navbar .nav-link { color: #fbbf24 !important; transition: all 0.3s ease !important; }
+    .nav-link:hover { color: hsl(46, 97%, 65%) !important; }
+    .nav-link.active, .nav-item.navbar-active .nav-link { color: #fcd34d !important; font-weight: 700 !important; }
     a { color: #fbbf24 !important; }
+    a:hover { color: #fcd34d !important; }
     h1, h2, h3, h4, h5, h6 { color: #ffffff !important; font-weight: 700 !important; }
+    .navbar-brand.title { color: #fbbf24 !important; font-weight: 400 !important; }
+    .navbar-brand.title .font-weight-bold { color: #fbbf24 !important; font-weight: 700 !important; }
+
+    /* Article Layout */
+    .article-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .article-header {
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid rgba(251, 191, 36, 0.15);
+    }
+
+    .article-header h1 {
+      font-family: 'Roboto Slab', serif !important;
+      font-size: 2.2rem !important;
+      line-height: 1.25 !important;
+      margin-bottom: 12px !important;
+    }
+
+    .article-subtitle {
+      font-family: 'Roboto', sans-serif;
+      font-size: 1.05rem;
+      color: #aaa !important;
+      line-height: 1.5;
+      margin-bottom: 16px;
+      font-weight: 300;
+    }
+
+    .article-meta {
+      font-size: 0.85rem;
+      color: #777 !important;
+      font-weight: 400;
+      margin-bottom: 4px;
+    }
+
+    .article-authors {
+      font-size: 0.9rem;
+      color: #aaa !important;
+      font-style: italic;
+    }
+
+    /* Serif reading font for body text */
+    .article-body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      font-size: 1.05rem;
+      line-height: 1.75;
+      color: #d4d4d4 !important;
+    }
+
+    .article-body h2 {
+      font-family: 'Roboto Slab', serif !important;
+      font-size: 1.55rem !important;
+      margin-top: 48px !important;
+      margin-bottom: 20px !important;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(251, 191, 36, 0.1);
+    }
+
+    .article-body h3 {
+      font-family: 'Roboto Slab', serif !important;
+      font-size: 1.2rem !important;
+      margin-top: 32px !important;
+      margin-bottom: 14px !important;
+      color: #fbbf24 !important;
+    }
+
+    .article-body p { margin-bottom: 1.2em; color: #d4d4d4 !important; }
+    .article-body ul, .article-body ol { margin-bottom: 1.2em; padding-left: 1.5em; }
+    .article-body li { margin-bottom: 0.4em; color: #d4d4d4 !important; }
+    .article-body strong { color: #ffffff !important; }
+
+    .article-body code {
+      font-family: 'Source Code Pro', 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
+      font-size: 0.88em;
+      background: rgba(30, 30, 30, 0.8) !important;
+      color: #fbbf24 !important;
+      padding: 2px 6px;
+      border-radius: 3px;
+      border: 1px solid rgba(251, 191, 36, 0.1) !important;
+    }
+
+    /* Callout boxes */
+    .callout { border-radius: 4px; padding: 16px 20px; margin: 24px 0; font-size: 0.95rem; }
+    .callout p:last-child { margin-bottom: 0; }
+    .callout-label {
+      font-family: 'Roboto', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .callout-insight { background: rgba(59, 130, 246, 0.08) !important; border: 1px solid rgba(59, 130, 246, 0.25); border-left: 3px solid #3b82f6; }
+    .callout-insight .callout-label { color: #3b82f6 !important; }
+    .callout-warning { background: rgba(245, 158, 11, 0.08) !important; border: 1px solid rgba(245, 158, 11, 0.25); border-left: 3px solid #f59e0b; }
+    .callout-warning .callout-label { color: #f59e0b !important; }
+    .callout-detail { background: rgba(147, 51, 234, 0.08) !important; border: 1px solid rgba(147, 51, 234, 0.25); border-left: 3px solid #9333ea; }
+    .callout-detail .callout-label { color: #9333ea !important; }
+
+    /* Table of Contents */
+    .toc {
+      background: rgba(30, 30, 30, 0.6) !important;
+      border: 1px solid rgba(251, 191, 36, 0.15);
+      border-radius: 4px;
+      padding: 20px 24px;
+      margin: 0 0 40px 0;
+    }
+    .toc h3 {
+      font-family: 'Roboto', sans-serif !important;
+      font-size: 0.9rem !important;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #fbbf24 !important;
+      margin-bottom: 12px !important;
+    }
+    .toc ol { padding-left: 1.2em; margin-bottom: 0; }
+    .toc li { font-family: 'Roboto', sans-serif; font-size: 0.9rem; line-height: 1.8; color: #aaa !important; }
+    .toc a { color: #d4d4d4 !important; text-decoration: none; }
+    .toc a:hover { color: #fbbf24 !important; }
+
+    /* Tables */
+    .article-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-family: 'Roboto', sans-serif;
+      font-size: 0.9rem;
+    }
+    .article-body th {
+      background: rgba(30, 30, 30, 0.8) !important;
+      color: #fbbf24 !important;
+      font-weight: 600;
+      padding: 8px 12px;
+      border: 1px solid rgba(251, 191, 36, 0.15);
+      text-align: left;
+      vertical-align: top;
+    }
+    .article-body td {
+      padding: 8px 12px;
+      border: 1px solid rgba(251, 191, 36, 0.1);
+      color: #d4d4d4 !important;
+      vertical-align: top;
+    }
+    .article-body tr:nth-child(even) td { background: rgba(25, 25, 25, 0.5) !important; }
+
+    .table-caption {
+      font-family: 'Roboto', sans-serif;
+      font-size: 0.85rem;
+      color: #888 !important;
+      text-align: center;
+      margin: -10px 0 24px 0;
+      font-style: italic;
+    }
+
+    /* Status badges in tables */
+    .badge-improved { color: #34d399 !important; font-weight: 600; }
+    .badge-similar { color: #fbbf24 !important; font-weight: 600; }
+    .badge-declined { color: #f87171 !important; font-weight: 600; }
+    .badge-gain { color: #34d399 !important; font-weight: 600; }
+    .badge-mixed { color: #fbbf24 !important; font-weight: 600; }
+
+    /* Final links block */
+    .paper-links {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin: 30px 0 10px 0;
+    }
+    .paper-links a {
+      display: inline-block;
+      padding: 10px 18px;
+      background: rgba(30, 30, 30, 0.6) !important;
+      border: 1px solid rgba(251, 191, 36, 0.25);
+      border-radius: 4px;
+      font-family: 'Roboto', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.25s ease;
+    }
+    .paper-links a:hover {
+      background: rgba(251, 191, 36, 0.08) !important;
+      border-color: rgba(251, 191, 36, 0.5);
+      transform: translateY(-2px);
+    }
+
+    /* Back link */
+    .back-link {
+      display: inline-block;
+      margin-bottom: 24px;
+      font-family: 'Roboto', sans-serif;
+      font-size: 0.85rem;
+    }
+
+    /* Setup/method grid */
+    .setup-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin: 24px 0 8px 0;
+    }
+    .setup-card {
+      background: rgba(30, 30, 30, 0.6) !important;
+      border: 1px solid rgba(251, 191, 36, 0.15);
+      border-radius: 4px;
+      padding: 16px 18px;
+    }
+    .setup-card h4 {
+      font-family: 'Roboto', sans-serif !important;
+      font-size: 0.85rem !important;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #fbbf24 !important;
+      margin: 0 0 10px 0 !important;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(251, 191, 36, 0.15);
+    }
+    .setup-card ul {
+      list-style: none !important;
+      padding-left: 0 !important;
+      margin: 0 !important;
+      font-family: 'Roboto', sans-serif;
+      font-size: 0.88rem;
+    }
+    .setup-card li {
+      padding: 4px 0;
+      color: #d4d4d4 !important;
+      border-bottom: 1px dashed rgba(251, 191, 36, 0.05);
+    }
+    .setup-card li:last-child { border-bottom: none; }
+    .setup-card li code {
+      background: transparent !important;
+      border: none !important;
+      color: #fbbf24 !important;
+      padding: 0 !important;
+      font-size: 0.85rem;
+    }
   </style>
-  <title>Multi-Task PEFT for Code</title>
+
+  <title>Parameter-Efficient Multi-Task Fine-Tuning in Code-Related Tasks | Zahidul Haque Alvi</title>
+  <meta name="description" content="A blog-style summary of our TOSEM submission on multi-task QLoRA for code generation, translation, and summarization across Qwen2.5-Coder 0.5B, 1.5B, and 3B.">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/zh_icon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/zh_icon.png">
+  <link rel="shortcut icon" href="/assets/img/zh_icon.png">
+
+  <!-- Fonts and Icons -->
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons" />
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
+
+  <!-- CSS Files -->
+  <link rel="stylesheet" href="/assets/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/academicons.min.css">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="canonical" href="/projects/multitask_peft/">
 </head>
 <body>
+  <!-- Header -->
   <nav id="navbar" class="navbar fixed-top navbar-expand-md z-depth-1 navbar-dark">
     <div class="container-fluid p-0">
       <a class="navbar-brand title" href="/"><span class="font-weight-bold">Zahidul</span> Haque</a>
-      <div class="collapse navbar-collapse">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item"><a class="nav-link" href="/">about</a></li>
-          <li class="nav-item"><a class="nav-link" href="/cv/">cv</a></li>
-          <li class="nav-item"><a class="nav-link" href="/projects/">projects</a></li>
-          <li class="nav-item"><a class="nav-link" href="/publications/">publications</a></li>
-          <li class="nav-item"><a class="nav-link" href="/teaching/">teaching</a></li>
+      <button class="navbar-toggler ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse text-right" id="navbarNav">
+        <ul class="navbar-nav ml-auto flex-nowrap">
+          <li class="nav-item"><a class="nav-link" href="/">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="/cv/">CV</a></li>
+          <li class="nav-item navbar-active font-weight-bold"><a class="nav-link" href="/projects/">Projects <span class="sr-only">(current)</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="/publications/">Publications</a></li>
+          <li class="nav-item"><a class="nav-link" href="/teaching/">Teaching</a></li>
+          <li class="nav-item"><a class="nav-link" href="/blog/">Blog</a></li>
         </ul>
       </div>
     </div>
   </nav>
-  <div class="content" style="padding-top: 100px; max-width: 1000px; margin: 0 auto;">
-    <h1>Parameter-Efficient Multi-Task Fine-Tuning in Code-Related Tasks</h1>
-    <h5>Investigating QLoRA fine-tuning across code generation, summarization, and translation</h5>
-    <p>This work presents the first comprehensive evaluation of Multi-task QLoRA across code generation, translation, and summarization, examining both functional correctness and code quality with Qwen2.5-Coder models (0.5B, 1.5B, 3B). Multi-task QLoRA achieves competitive performance versus Single-task QLoRA while training a unified model.</p>
-    <p>Key findings include:</p>
-    <ul style="color: #e8e8e8;">
-      <li>32.07% Java pass@1 versus 29.89% Single-task (+2.18 points)</li>
-      <li>29.90% Python summarization BLEU versus 23.31% (+28.3% relative)</li>
-      <li>32.0% lower Python complexity and 6.3% fewer Java PMD violations at 3B</li>
-      <li>Larger models demonstrate superior ability to balance multiple objectives within QLoRA's parameter-efficient framework</li>
-    </ul>
-    <p><a href="https://arxiv.org/html/2601.15094v1" target="_blank" rel="noopener noreferrer">Read the paper</a> | <a href="https://github.com/alvi75/MultiTask-QLoRA-NFAnalysis" target="_blank" rel="noopener noreferrer">View code</a></p>
-  </div>
+
+  <!-- Scrolling Progress Bar -->
+  <progress id="progress" value="0">
+    <div class="progress-container">
+      <span class="progress-bar"></span>
+    </div>
+  </progress>
+
+  <!-- Content -->
+  <div class="content">
+    <div class="article-container">
+
+      <a class="back-link" href="/projects/">&larr; Back to Projects</a>
+
+      <!-- Article Header -->
+      <div class="article-header">
+        <h1>Parameter-Efficient Multi-Task Fine-Tuning in Code-Related Tasks</h1>
+        <p class="article-subtitle">Can a single QLoRA-fine-tuned model handle code generation, translation, and summarization at once &mdash; and hold up under both functional correctness and non-functional code quality?</p>
+        <p class="article-meta">Submitted to ACM Transactions on Software Engineering and Methodology (TOSEM) &middot; January 2026 &middot; Preprint: <a href="https://arxiv.org/abs/2601.15094" target="_blank" rel="noopener noreferrer">arXiv:2601.15094</a></p>
+        <p class="article-authors">Md Zahidul Haque, Saima Afrin, Antonio Mastropaolo</p>
+      </div>
+
+      <!-- Table of Contents -->
+      <div class="toc">
+        <h3>Contents</h3>
+        <ol>
+          <li><a href="#problem">The Problem: Multi-Task in a PEFT World</a></li>
+          <li><a href="#what-we-did">What We Did: 15 Models, 3 Tasks, 3 Scales</a></li>
+          <li><a href="#rq1">RQ1 &mdash; Multi-Task QLoRA vs Single-Task QLoRA</a></li>
+          <li><a href="#rq2">RQ2 &mdash; Multi-Task QLoRA vs Multi-Task Full Fine-Tuning</a></li>
+          <li><a href="#takeaways">Key Takeaways</a></li>
+          <li><a href="#bottom-line">Bottom Line</a></li>
+        </ol>
+      </div>
+
+      <!-- Article Body -->
+      <div class="article-body">
+
+        <!-- Section 1: The Problem -->
+        <h2 id="problem">1. The Problem: Multi-Task in a PEFT World</h2>
+
+        <p>Large code models (LCMs) like CodeLlama, DeepSeek-Coder, and Qwen2.5-Coder have made impressive progress on individual code-related tasks, but adapting them to a specific downstream setting still requires fine-tuning. Full fine-tuning is expensive and storage-heavy &mdash; one full copy of the model per task &mdash; and parameter-efficient fine-tuning (PEFT) methods like <strong>QLoRA</strong> have emerged as the practical alternative for the single-task case.</p>
+
+        <p>But real software engineering workflows are not single-task. A useful coding assistant generates code from a description, summarizes existing functions, translates code between languages, and switches between these modes inside the same session. The interesting question is whether <strong>a single QLoRA-fine-tuned model can handle multiple code tasks simultaneously</strong> &mdash; and not just on functional correctness, but also on the non-functional qualities (complexity, maintainability, code smells) that determine whether the produced code is actually deployable.</p>
+
+        <p>To our knowledge, this is the <strong>first study to jointly evaluate functional correctness and non-functional code quality in multi-task QLoRA settings</strong>. Most prior PEFT work focused either on a single task at a time, or on functional metrics only.</p>
+
+        <!-- Section 2: What We Did -->
+        <h2 id="what-we-did">2. What We Did: 15 Models, 3 Tasks, 3 Scales</h2>
+
+        <p>We took the <strong>Qwen2.5-Coder-Instruct</strong> family at three scales &mdash; <strong>0.5B, 1.5B, and 3B parameters</strong> &mdash; and ran a controlled comparison across three training configurations and three code-related tasks.</p>
+
+        <div class="setup-grid">
+          <div class="setup-card">
+            <h4>Tasks</h4>
+            <ul>
+              <li><strong>Code Generation</strong> &mdash; NL &rarr; Code</li>
+              <li><strong>Code Summarization</strong> &mdash; Code &rarr; NL</li>
+              <li><strong>Code Translation</strong> &mdash; Java &harr; C# (Code &rarr; Code)</li>
+            </ul>
+          </div>
+          <div class="setup-card">
+            <h4>Training configurations</h4>
+            <ul>
+              <li><code>MT-QLoRA</code> &mdash; Multi-task QLoRA (one model, all tasks)</li>
+              <li><code>ST-QLoRA</code> &mdash; Single-task QLoRA (one model per task)</li>
+              <li><code>MT-FFT</code> &mdash; Multi-task Full Fine-Tuning (no PEFT)</li>
+            </ul>
+          </div>
+          <div class="setup-card">
+            <h4>Model scales</h4>
+            <ul>
+              <li><code>Qwen2.5-Coder-0.5B-Instruct</code></li>
+              <li><code>Qwen2.5-Coder-1.5B-Instruct</code></li>
+              <li><code>Qwen2.5-Coder-3B-Instruct</code></li>
+            </ul>
+          </div>
+        </div>
+
+        <p>That gives <strong>15 trained models</strong> total: 3 configurations &times; 3 scales, where MT-QLoRA and MT-FFT each yield one multi-task model per scale (3 + 3 = 6) and ST-QLoRA yields one model per task per scale (3 tasks &times; 3 scales = 9). Together: 6 + 9 = 15.</p>
+
+        <h3>Datasets</h3>
+
+        <p>We used the standard public benchmarks: <strong>CodeXGLUE</strong> for code generation, code summarization (Python and Java), and Java&harr;C# code translation, plus <strong>CoderEval</strong> for execution-based evaluation of code generation. Details of the per-task splits are summarized in Table 2.</p>
+
+        <h3>Table 2 &mdash; Dataset and Task Setup</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="width:24%">Task</th>
+              <th>Languages</th>
+              <th>Source benchmark(s)</th>
+              <th>Splits</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Code Generation</td><td>Python, Java</td><td>CodeXGLUE (NL&rarr;Code), CoderEval</td><td>Train / Validation / Test (CodeXGLUE standard splits; CoderEval used for execution-based pass@1)</td></tr>
+            <tr><td>Code Summarization</td><td>Python, Java</td><td>CodeXGLUE (Code&rarr;NL)</td><td>Train / Validation / Test (CodeXGLUE standard splits)</td></tr>
+            <tr><td>Code Translation</td><td>Java &harr; C#</td><td>CodeXGLUE (Code&rarr;Code)</td><td>Train / Validation / Test (CodeXGLUE standard splits)</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 2. Per-task data setup. The exact training/validation/test row counts follow the public CodeXGLUE and CoderEval releases used by the paper.</p>
+
+        <h3>Metrics</h3>
+
+        <p>We evaluated along three axes:</p>
+        <ul>
+          <li><strong>Functional correctness</strong> &mdash; <code>pass@1</code> (CoderEval, execution-based) for code generation.</li>
+          <li><strong>Surface-level quality</strong> &mdash; <code>CodeBLEU</code>, <code>BLEU</code>, <code>METEOR</code>, <code>ROUGE-L</code>, <code>chrF</code>, <code>BERTScore</code>, and <code>SIDE</code> for translation and summarization.</li>
+          <li><strong>Non-functional code quality</strong> &mdash; static analysis with <code>Pylint</code> (Python), <code>PMD</code> (Java), <code>Roslyn</code> (C#), <code>Lizard</code> (cyclomatic and cognitive complexity), and <code>SonarCloud</code> (issues, code smells, maintainability).</li>
+          <li><strong>LLM-as-a-judge</strong> &mdash; we additionally used <code>GPT-5 Mini</code> as a judge for summarization quality, providing a second signal beyond reference-based metrics.</li>
+        </ul>
+
+        <p>For statistical reliability, paired comparisons used <strong>McNemar's test</strong> (binary outcomes such as pass@1) and the <strong>Wilcoxon signed-rank test</strong> (continuous metrics), with <strong>Holm-Bonferroni</strong> correction for multiple comparisons.</p>
+
+        <div class="callout callout-insight">
+          <div class="callout-label">Why this design</div>
+          <p>By fixing the model family and varying only scale (0.5B/1.5B/3B) and training configuration (MT-QLoRA / ST-QLoRA / MT-FFT), we can attribute differences in performance and code quality to the configuration choice rather than to model architecture. And by combining execution-based metrics, surface metrics, static-analysis metrics, and an LLM judge, we close the gap between &ldquo;does it pass tests?&rdquo; and &ldquo;is it actually good code?&rdquo;</p>
+        </div>
+
+        <!-- Section 3: RQ1 -->
+        <h2 id="rq1">3. RQ1 &mdash; Multi-Task QLoRA vs Single-Task QLoRA</h2>
+
+        <p>Does training one QLoRA model on three tasks at once cost us anything compared to training a separate QLoRA per task?</p>
+
+        <h3>Code Generation</h3>
+
+        <p>Across both Python and Java, <strong>MT-QLoRA is competitive with ST-QLoRA, and the benefits of multi-task training increase with model capacity</strong>.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="width:18%">Language</th>
+              <th style="width:14%">Scale</th>
+              <th>MT-QLoRA pass@1</th>
+              <th>ST-QLoRA pass@1</th>
+              <th>Direction</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td rowspan="3">Python</td><td>0.5B</td><td colspan="2">MT-QLoRA matches ST-QLoRA</td><td><span class="badge-similar">Similar</span></td></tr>
+            <tr><td>1.5B</td><td>18.95%</td><td>16.84%</td><td><span class="badge-improved">MT &gt; ST</span></td></tr>
+            <tr><td>3B</td><td>21.05%</td><td>20.53%</td><td><span class="badge-improved">MT &gt; ST</span></td></tr>
+            <tr><td rowspan="3">Java</td><td>0.5B</td><td colspan="2">Comparable</td><td><span class="badge-similar">Similar</span></td></tr>
+            <tr><td>1.5B</td><td colspan="2">Comparable</td><td><span class="badge-similar">Similar</span></td></tr>
+            <tr><td>3B</td><td>32.07%</td><td>29.89%</td><td><span class="badge-improved">MT &gt; ST</span></td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">RQ1 &mdash; pass@1 for code generation: MT-QLoRA vs ST-QLoRA across the three Qwen2.5-Coder scales.</p>
+
+        <p>Static analysis adds an interesting wrinkle: <strong>larger MT models produce simpler, more maintainable code</strong>. At 3B for Python, MT-QLoRA showed <strong>33.8% fewer maintainability issues</strong> and <strong>19.3% lower cognitive complexity</strong> than ST-QLoRA. McNemar (for pass@1) and Wilcoxon (for continuous metrics) tests with Holm-Bonferroni correction did not find statistically significant differences in raw pass@1, so the safe summary is: <strong>MT-QLoRA matches ST-QLoRA on correctness while improving non-functional code quality at scale</strong>.</p>
+
+        <h3>Code Translation</h3>
+
+        <p>Translation is more sensitive to direction and scale.</p>
+        <ul>
+          <li><strong>Java&rarr;C#</strong>: MT-QLoRA underperforms ST-QLoRA at 0.5B and 3B but slightly improves at <strong>1.5B</strong>. MT-QLoRA also consistently produces <strong>more compact</strong> Java&rarr;C# translations.</li>
+          <li><strong>C#&rarr;Java</strong>: similar pattern with <strong>1.5B as the sweet spot</strong>. At 3B, C#&rarr;Java MT-QLoRA reduces <strong>PMD issues by 13.8%</strong> and <strong>SonarCloud issues by 22.7%</strong>.</li>
+        </ul>
+
+        <p>So translation is the task where MT-QLoRA's quality advantage shows up most clearly in non-functional metrics, even when surface-level translation metrics are mixed.</p>
+
+        <h3>Code Summarization</h3>
+
+        <p>Summarization shows a striking <strong>language-dependent</strong> effect.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="width:18%">Language</th>
+              <th style="width:14%">Scale</th>
+              <th>BLEU change (MT-QLoRA vs ST-QLoRA)</th>
+              <th>Direction</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td rowspan="3">Python</td><td>0.5B</td><td>+36.0%</td><td><span class="badge-improved">MT &gt; ST</span></td></tr>
+            <tr><td>1.5B</td><td>+51.5%</td><td><span class="badge-improved">MT &gt; ST</span></td></tr>
+            <tr><td>3B</td><td>+28.3%</td><td><span class="badge-improved">MT &gt; ST</span></td></tr>
+            <tr><td rowspan="3">Java</td><td>0.5B</td><td colspan="2"><span class="badge-declined">ST &gt; MT</span> (advantage strengthens with scale)</td></tr>
+            <tr><td>1.5B</td><td colspan="2"><span class="badge-declined">ST &gt; MT</span></td></tr>
+            <tr><td>3B</td><td colspan="2"><span class="badge-declined">ST &gt; MT</span></td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">RQ1 &mdash; BLEU comparison for code summarization. Python benefits massively from multi-task training; Java's pattern reverses.</p>
+
+        <p>The <strong>LLM-as-a-judge</strong> evaluation (GPT-5 Mini) tells a slightly more nuanced story: for Java summarization, no significant quality differences between MT-QLoRA and ST-QLoRA, while for Python, MT-QLoRA's advantages remain significant at the larger scales.</p>
+
+        <div class="callout callout-detail">
+          <div class="callout-label">RQ1 takeaway</div>
+          <p>MT-QLoRA is genuinely competitive with ST-QLoRA on functional metrics, and frequently better on non-functional code quality &mdash; especially at 1.5B and 3B. The clearest exception is <strong>Java summarization</strong>, where single-task training retains an advantage that grows with scale.</p>
+        </div>
+
+        <!-- Section 4: RQ2 -->
+        <h2 id="rq2">4. RQ2 &mdash; Multi-Task QLoRA vs Multi-Task Full Fine-Tuning</h2>
+
+        <p>The next question is whether the parameter-efficient route gives anything up relative to multi-task <em>full</em> fine-tuning.</p>
+
+        <h3>Code Generation</h3>
+
+        <p>For both Python and Java, <strong>MT-QLoRA matches or exceeds MT-FFT</strong>, with the strongest gains at the 3B scale.</p>
+
+        <h3>Table 11 &mdash; Python Code Generation: MT-QLoRA vs MT-FFT</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="width:14%">Scale</th>
+              <th>MT-QLoRA pass@1</th>
+              <th>MT-FFT pass@1</th>
+              <th>&Delta; pass@1</th>
+              <th>Lizard / Pylint / SonarCloud</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>0.5B</td><td colspan="2"><span class="badge-improved">MT-QLoRA &gt; MT-FFT</span></td><td><span class="badge-improved">Improved</span></td><td>Lower complexity overall</td></tr>
+            <tr><td>1.5B</td><td colspan="2"><span class="badge-improved">MT-QLoRA &gt; MT-FFT</span></td><td><span class="badge-improved">Improved</span></td><td>Lower complexity overall</td></tr>
+            <tr><td>3B</td><td>21.05%</td><td>17.37%</td><td><span class="badge-improved">+21.2%</span></td><td><strong>32% lower CyC</strong> for MT-QLoRA; fewer Pylint and SonarCloud issues</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 11. Python code generation, MT-QLoRA vs MT-FFT. MT-QLoRA improves pass@1 at every scale and produces substantially less complex code at 3B.</p>
+
+        <h3>Table 12 &mdash; Java Code Generation: MT-QLoRA vs MT-FFT</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="width:14%">Scale</th>
+              <th>MT-QLoRA pass@1</th>
+              <th>MT-FFT pass@1</th>
+              <th>&Delta; pass@1</th>
+              <th>Lizard / PMD / SonarCloud</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>0.5B</td><td colspan="2"><span class="badge-similar">Comparable</span></td><td><span class="badge-similar">Similar</span></td><td>Comparable static-analysis profile</td></tr>
+            <tr><td>1.5B</td><td colspan="2"><span class="badge-improved">MT-QLoRA &ge; MT-FFT</span></td><td><span class="badge-improved">Improved</span></td><td>Comparable to slightly fewer issues</td></tr>
+            <tr><td>3B</td><td>32.07%</td><td>26.63%</td><td><span class="badge-improved">+20.4%</span></td><td>Fewer PMD and SonarCloud issues vs MT-FFT</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 12. Java code generation, MT-QLoRA vs MT-FFT. MT-QLoRA is substantially better at 3B on both functional and non-functional metrics.</p>
+
+        <h3>Code Translation</h3>
+
+        <p>Translation results are more mixed:</p>
+        <ul>
+          <li><strong>Java&rarr;C#</strong>: MT-FFT generally leads on CodeBLEU.</li>
+          <li><strong>C#&rarr;Java</strong>: MT-QLoRA is competitive at 1.5B and shows <em>large</em> non-functional quality improvements at 3B &mdash; <strong>SonarCloud issues drop by 69.6%</strong> versus MT-FFT.</li>
+        </ul>
+
+        <h3>Code Summarization</h3>
+
+        <p>The biggest gap between MT-QLoRA and MT-FFT shows up in Python summarization, where MT-QLoRA dramatically outperforms MT-FFT on BLEU at every scale.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="width:18%">Language</th>
+              <th style="width:14%">Scale</th>
+              <th>BLEU change (MT-QLoRA vs MT-FFT)</th>
+              <th>Direction</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td rowspan="3">Python</td><td>0.5B</td><td>+103.9%</td><td><span class="badge-improved">MT-QLoRA &gt; MT-FFT</span></td></tr>
+            <tr><td>1.5B</td><td>+80.7%</td><td><span class="badge-improved">MT-QLoRA &gt; MT-FFT</span></td></tr>
+            <tr><td>3B</td><td>+32.7%</td><td><span class="badge-improved">MT-QLoRA &gt; MT-FFT</span></td></tr>
+            <tr><td rowspan="3">Java</td><td>0.5B</td><td colspan="2"><span class="badge-mixed">Mixed</span> &mdash; MT-QLoRA better on overlap metrics (METEOR, ROUGE-L, SIDE); MT-FFT better on BERTScore</td></tr>
+            <tr><td>1.5B</td><td colspan="2"><span class="badge-mixed">Mixed</span></td></tr>
+            <tr><td>3B</td><td colspan="2"><span class="badge-mixed">Mixed</span> &mdash; gap on BERTScore narrows at scale</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">RQ2 &mdash; Code summarization. Python heavily favors MT-QLoRA over MT-FFT; Java is metric-dependent.</p>
+
+        <div class="callout callout-warning">
+          <div class="callout-label">RQ2 takeaway</div>
+          <p>Multi-task QLoRA is <strong>not just cheaper</strong> than multi-task full fine-tuning &mdash; it is often <strong>better</strong>, particularly at 3B and particularly for Python. The places MT-FFT still leads (Java&rarr;C# CodeBLEU, Java summarization BERTScore at small scales) are narrow and metric-specific, not a general superiority.</p>
+        </div>
+
+        <!-- Section 5: Key Takeaways -->
+        <h2 id="takeaways">5. Key Takeaways</h2>
+
+        <ul>
+          <li><strong>Multi-task QLoRA is not a cost-saving compromise.</strong> It can match or beat both single-task QLoRA and multi-task full fine-tuning, particularly at the 3B scale.</li>
+          <li><strong>Bigger helps.</strong> Larger models are better at balancing multiple objectives within a parameter-efficient framework. The 3B Qwen2.5-Coder-Instruct is where MT-QLoRA's advantages are most consistent.</li>
+          <li><strong>Code quality is not systematically degraded by multi-task PEFT.</strong> Across Pylint, PMD, Roslyn, Lizard, and SonarCloud, MT-QLoRA frequently produces lower-complexity, more-maintainable code than both ST-QLoRA and MT-FFT &mdash; contradicting the common assumption that multi-task PEFT must trade off code quality.</li>
+          <li><strong>Language-dependent effects exist.</strong> Python benefits more from multi-task training; Java summarization tends to favor single-task training, with the gap widening at scale.</li>
+          <li><strong>Direction matters in translation.</strong> The Java&rarr;C# and C#&rarr;Java directions behave differently, and 1.5B is the most consistent &ldquo;sweet spot&rdquo; for MT-QLoRA on translation.</li>
+          <li><strong>First joint evaluation of correctness <em>and</em> quality.</strong> To our knowledge, this is the first study of multi-task PEFT in code that evaluates functional correctness and non-functional code quality together &mdash; a more realistic standard for whether the produced code is actually deployable.</li>
+        </ul>
+
+        <!-- Section 6: Bottom Line -->
+        <h2 id="bottom-line">6. Bottom Line</h2>
+
+        <p>A single QLoRA-optimized model can effectively handle code generation, code translation, and code summarization simultaneously, and the resulting code holds up under both rigorous static analysis and LLM-based evaluation. For practitioners, the practical message is straightforward: <strong>train one MT-QLoRA model on top of a Qwen2.5-Coder-class base &mdash; preferably at 1.5B or 3B &mdash; before reaching for either per-task adapters or full fine-tuning</strong>. The exceptions (Java summarization, Java&rarr;C# CodeBLEU) are worth knowing, but they don't change the headline.</p>
+
+        <p>For researchers, the more interesting message is methodological: evaluating multi-task PEFT on functional metrics alone is leaving most of the story on the table. Static analysis and LLM-as-a-judge change the picture in non-trivial ways &mdash; usually in MT-QLoRA's favor.</p>
+
+        <div class="paper-links">
+          <a href="https://arxiv.org/abs/2601.15094" target="_blank" rel="noopener noreferrer"><i class="fas fa-file-alt"></i>&nbsp; Read the preprint (arXiv)</a>
+          <a href="https://github.com/alvi75/MultiTask-QLoRA-NFAnalysis" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i>&nbsp; Replication Package (GitHub)</a>
+        </div>
+
+      </div><!-- /article-body -->
+    </div><!-- /article-container -->
+  </div><!-- /content -->
+
+  <!-- Footer -->
+  <footer>
+    &copy; Copyright 2025 Zahidul Haque Alvi -- A special thanks to <a href="https://github.com/eaplatanios/eaplatanios.github.io" target="_blank" rel="noopener noreferrer">Anthony Platanios</a> for making the template publicly available.
+  </footer>
+
+  <!-- Core JavaScript Files -->
+  <script src="/assets/js/jquery.min.js" type="text/javascript"></script>
+  <script src="/assets/js/popper.min.js" type="text/javascript"></script>
+  <script src="/assets/js/bootstrap.min.js" type="text/javascript"></script>
+  <script src="/assets/js/mdb.min.js" type="text/javascript"></script>
+  <script src="/assets/js/common.js"></script>
+
+  <!-- Scrolling Progress Bar -->
+  <script type="text/javascript">
+    $(document).ready(function() {
+      var navbarHeight = $('#navbar').outerHeight(true);
+      $('body').css({ 'padding-top': navbarHeight });
+      $('progress-container').css({ 'padding-top': navbarHeight });
+      var progressBar = $('#progress');
+      progressBar.css({ 'top': navbarHeight });
+      var getMax = function() { return $(document).height() - $(window).height(); }
+      var getValue = function() { return $(window).scrollTop(); }
+      if ('max' in document.createElement('progress')) {
+        progressBar.attr({ max: getMax() });
+        progressBar.attr({ value: getValue() });
+        $(document).on('scroll', function() {
+          progressBar.attr({ value: getValue() });
+        });
+        $(window).resize(function() {
+          var navbarHeight = $('#navbar').outerHeight(true);
+          $('body').css({ 'padding-top': navbarHeight });
+          $('progress-container').css({ 'padding-top': navbarHeight });
+          progressBar.css({ 'top': navbarHeight });
+          progressBar.attr({ max: getMax(), value: getValue() });
+        });
+      } else {
+        var max = getMax(), value, width;
+        var getWidth = function() {
+          value = getValue();
+          width = (value/max) * 100;
+          width = width + '%';
+          return width;
+        }
+        var setWidth = function() { progressBar.css({ width: getWidth() }); };
+        setWidth();
+        $(document).on('scroll', setWidth);
+        $(window).on('resize', function() {
+          max = getMax();
+          setWidth();
+        });
+      }
+    });
+  </script>
+
 </body>
 </html>
