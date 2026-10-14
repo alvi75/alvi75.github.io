@@ -257,7 +257,7 @@
   </style>
 
   <title>Parameter-Efficient Multi-Task Fine-Tuning in Code-Related Tasks | Zahidul Haque Alvi</title>
-  <meta name="description" content="A blog-style summary of our TOSEM paper on multi-task QLoRA for code generation, translation, and summarization across Qwen2.5-Coder 0.5B, 1.5B, and 3B.">
+  <meta name="description" content="A blog-style summary of our TOSEM paper on multi-task QLoRA for code generation, translation, and summarization across Qwen2.5-Coder 0.5B to 7B, with a CodeLlama-7B replication.">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
 
@@ -323,7 +323,7 @@
         <h3>Contents</h3>
         <ol>
           <li><a href="#problem">The Problem: Multi-Task in a PEFT World</a></li>
-          <li><a href="#what-we-did">What We Did: 15 Models, 3 Tasks, 3 Scales</a></li>
+          <li><a href="#what-we-did">What We Did: 28 Models, 3 Tasks, 4 Scales</a></li>
           <li><a href="#rq1">RQ1 &mdash; Multi-Task QLoRA vs Single-Task QLoRA</a></li>
           <li><a href="#rq2">RQ2 &mdash; Multi-Task QLoRA vs Multi-Task Full Fine-Tuning</a></li>
           <li><a href="#takeaways">Key Takeaways</a></li>
@@ -341,12 +341,12 @@
 
         <p>But real software engineering workflows are not single-task. A useful coding assistant generates code from a description, summarizes existing functions, translates code between languages, and switches between these modes inside the same session. The interesting question is whether <strong>a single QLoRA-fine-tuned model can handle multiple code tasks simultaneously</strong> &mdash; and not just on functional correctness, but also on the non-functional qualities (complexity, maintainability, code smells) that determine whether the produced code is actually deployable.</p>
 
-        <p>To our knowledge, this is the <strong>first study to jointly evaluate functional correctness and non-functional code quality in multi-task QLoRA settings</strong>. Most prior PEFT work focused either on a single task at a time, or on functional metrics only.</p>
+        <p>To our knowledge, this is <strong>one of the first studies to jointly evaluate functional correctness and non-functional code quality in multi-task QLoRA settings</strong>. Most prior PEFT work focused either on a single task at a time, or on functional metrics only. We study QLoRA as one representative method from the LoRA family; we do not test other PEFT families such as adapters or prompt and prefix tuning.</p>
 
         <!-- Section 2: What We Did -->
-        <h2 id="what-we-did">2. What We Did: 15 Models, 3 Tasks, 3 Scales</h2>
+        <h2 id="what-we-did">2. What We Did: 28 Models, 3 Tasks, 4 Scales</h2>
 
-        <p>We took the <strong>Qwen2.5-Coder-Instruct</strong> family at three scales &mdash; <strong>0.5B, 1.5B, and 3B parameters</strong> &mdash; and ran a controlled comparison across three training configurations and three code-related tasks.</p>
+        <p>We took the <strong>Qwen2.5-Coder-Instruct</strong> family at four scales &mdash; <strong>0.5B, 1.5B, 3B, and 7B parameters</strong> &mdash; and ran a controlled comparison across three training configurations and three code-related tasks. To check that the RQ1 results are not tied to one model family, we repeated RQ1 on <strong>CodeLlama-7B-Instruct</strong> with the same data, adapter settings, hyperparameters, and evaluation.</p>
 
         <div class="setup-grid">
           <div class="setup-card">
@@ -371,93 +371,103 @@
               <li><code>Qwen2.5-Coder-0.5B-Instruct</code></li>
               <li><code>Qwen2.5-Coder-1.5B-Instruct</code></li>
               <li><code>Qwen2.5-Coder-3B-Instruct</code></li>
+              <li><code>Qwen2.5-Coder-7B-Instruct</code></li>
+              <li><code>CodeLlama-7B-Instruct</code> (RQ1 only)</li>
             </ul>
           </div>
         </div>
 
-        <p>That gives <strong>15 trained models</strong> total: 3 configurations &times; 3 scales, where MT-QLoRA and MT-FFT each yield one multi-task model per scale (3 + 3 = 6) and ST-QLoRA yields one model per task per scale (3 tasks &times; 3 scales = 9). Together: 6 + 9 = 15.</p>
+        <p>That gives <strong>28 trained models</strong>. The Qwen2.5-Coder grid has 20: MT-QLoRA and MT-FFT each yield one multi-task model per scale (4 + 4 = 8), and ST-QLoRA yields one model per task per scale (3 tasks &times; 4 scales = 12). CodeLlama-7B adds 4 (1 MT-QLoRA + 3 ST-QLoRA). The last 4 are 3B QLoRA ablation models: one trained with balanced task sampling and three trained on two-task subsets. Together: 20 + 4 + 4 = 28.</p>
 
         <h3>Datasets</h3>
 
-        <p>We used the standard public benchmarks: <strong>CodeXGLUE</strong> for code generation, code summarization (Python and Java), and Java&harr;C# code translation, plus <strong>CoderEval</strong> for execution-based evaluation of code generation. Details of the per-task splits are summarized in Table 2.</p>
+        <p>Training and validation data come from <strong>CodeXGLUE</strong>. For code generation we inverted the Code-to-Text pairs (docstring &rarr; code); summarization uses the same pairs in the normal direction; translation uses the CodeXGLUE Java&harr;C# pairs. For testing, code generation uses <strong>CoderEval</strong> problems with verified test suites, summarization uses a curated CoderEval subset of long functions (from Crupi et al.), and translation uses the CodeXGLUE test split. Table 2 gives the counts.</p>
 
-        <h3>Table 2 &mdash; Dataset and Task Setup</h3>
+        <h3>Table 2 &mdash; Dataset Statistics</h3>
 
         <table>
           <thead>
             <tr>
-              <th style="width:24%">Task</th>
-              <th>Languages</th>
-              <th>Source benchmark(s)</th>
-              <th>Splits</th>
+              <th style="width:28%">Task</th>
+              <th>Language</th>
+              <th>Train</th>
+              <th>Validation</th>
+              <th>Test</th>
             </tr>
           </thead>
           <tbody>
-            <tr><td>Code Generation</td><td>Python, Java</td><td>CodeXGLUE (NL&rarr;Code), CoderEval</td><td>Train / Validation / Test (CodeXGLUE standard splits; CoderEval used for execution-based pass@1)</td></tr>
-            <tr><td>Code Summarization</td><td>Python, Java</td><td>CodeXGLUE (Code&rarr;NL)</td><td>Train / Validation / Test (CodeXGLUE standard splits)</td></tr>
-            <tr><td>Code Translation</td><td>Java &harr; C#</td><td>CodeXGLUE (Code&rarr;Code)</td><td>Train / Validation / Test (CodeXGLUE standard splits)</td></tr>
+            <tr><td rowspan="2">Code Summarization</td><td>Java</td><td>164,923</td><td>5,183</td><td>99*</td></tr>
+            <tr><td>Python</td><td>251,820</td><td>13,914</td><td>100*</td></tr>
+            <tr><td rowspan="2">Code Generation</td><td>Java</td><td>164,923</td><td>5,183</td><td>184*</td></tr>
+            <tr><td>Python</td><td>251,818</td><td>13,914</td><td>190*</td></tr>
+            <tr><td rowspan="2">Code Translation</td><td>Java &rarr; C#</td><td>10,300</td><td>500</td><td>1,000</td></tr>
+            <tr><td>C# &rarr; Java</td><td>10,300</td><td>500</td><td>1,000</td></tr>
           </tbody>
         </table>
-        <p class="table-caption">Table 2. Per-task data setup. The exact training/validation/test row counts follow the public CodeXGLUE and CoderEval releases used by the paper.</p>
+        <p class="table-caption">Table 2. Dataset statistics. Train and validation sets are from CodeXGLUE. * Test instances from CoderEval.</p>
 
         <h3>Metrics</h3>
 
-        <p>We evaluated along three axes:</p>
+        <p>We evaluated along four axes:</p>
         <ul>
-          <li><strong>Functional correctness</strong> &mdash; <code>pass@1</code> (CoderEval, execution-based) for code generation.</li>
-          <li><strong>Surface-level quality</strong> &mdash; <code>CodeBLEU</code>, <code>BLEU</code>, <code>METEOR</code>, <code>ROUGE-L</code>, <code>chrF</code>, <code>BERTScore</code>, and <code>SIDE</code> for translation and summarization.</li>
-          <li><strong>Non-functional code quality</strong> &mdash; static analysis with <code>Pylint</code> (Python), <code>PMD</code> (Java), <code>Roslyn</code> (C#), <code>Lizard</code> (cyclomatic and cognitive complexity), and <code>SonarCloud</code> (issues, code smells, maintainability).</li>
-          <li><strong>LLM-as-a-judge</strong> &mdash; we additionally used <code>GPT-5 Mini</code> as a judge for summarization quality, providing a second signal beyond reference-based metrics.</li>
+          <li><strong>Functional correctness</strong> &mdash; <code>pass@1</code> on CoderEval (execution-based) plus <code>CodeBLEU</code> for code generation; <code>CodeBLEU</code> alone for translation, since the CodeXGLUE translation data has no tests.</li>
+          <li><strong>Summary similarity</strong> &mdash; <code>BLEU</code>, <code>METEOR</code>, <code>ROUGE-L</code>, <code>chrF</code>, <code>BERTScore</code>, and <code>SIDE</code> (Java only).</li>
+          <li><strong>Non-functional code quality</strong> &mdash; static analysis with <code>Lizard</code> (lines of code, tokens, cyclomatic complexity, detection rate), <code>Pylint</code> (Python), <code>PMD</code> (Java), <code>Roslyn</code> (C# syntax errors and maintainability issues), and <code>SonarCloud</code> (security hotspots, reliability, maintainability, cognitive complexity).</li>
+          <li><strong>LLM-as-a-judge</strong> &mdash; <code>GPT-5 Mini</code> rates each summary for content adequacy, conciseness, and fluency on a 1&ndash;5 scale, five times, and we average the runs. We checked the judge against two human annotators on 200 summaries from the 3B models: Pearson correlation with the mean human score was 0.633 for content adequacy, 0.827 for conciseness, and 0.877 for fluency. The judge scores content adequacy about 0.8 points lower than the humans do, but keeps their ranking.</li>
         </ul>
 
         <p>For statistical reliability, paired comparisons used <strong>McNemar's test</strong> (binary outcomes such as pass@1) and the <strong>Wilcoxon signed-rank test</strong> (continuous metrics), with <strong>Holm-Bonferroni</strong> correction for multiple comparisons.</p>
 
         <div class="callout callout-insight">
           <div class="callout-label">Why this design</div>
-          <p>By fixing the model family and varying only scale (0.5B/1.5B/3B) and training configuration (MT-QLoRA / ST-QLoRA / MT-FFT), we can attribute differences in performance and code quality to the configuration choice rather than to model architecture. And by combining execution-based metrics, surface metrics, static-analysis metrics, and an LLM judge, we close the gap between &ldquo;does it pass tests?&rdquo; and &ldquo;is it actually good code?&rdquo;</p>
+          <p>By fixing the main model family and varying only scale (0.5B to 7B) and training configuration (MT-QLoRA / ST-QLoRA / MT-FFT), we can attribute differences in performance and code quality to the configuration choice rather than to model architecture. The CodeLlama-7B replication then checks whether the RQ1 patterns survive a change of architecture, tokenizer, and pretraining data. And by combining execution-based metrics, similarity metrics, static-analysis metrics, and an LLM judge, we close the gap between &ldquo;does it pass tests?&rdquo; and &ldquo;is it actually good code?&rdquo;</p>
         </div>
 
         <!-- Section 3: RQ1 -->
         <h2 id="rq1">3. RQ1 &mdash; Multi-Task QLoRA vs Single-Task QLoRA</h2>
 
-        <p>Does training one QLoRA model on three tasks at once cost us anything compared to training a separate QLoRA per task?</p>
+        <p>Does training one QLoRA model on three tasks at once cost us anything compared to training a separate QLoRA per task? The discussion below covers 0.5B&ndash;3B; 7B and CodeLlama-7B are in the tables and summarized at the end of the section.</p>
 
         <h3>Code Generation</h3>
 
-        <p>Across both Python and Java, <strong>MT-QLoRA is competitive with ST-QLoRA, and the benefits of multi-task training increase with model capacity</strong>.</p>
+        <p>Up to 3B, <strong>MT-QLoRA is competitive with ST-QLoRA, and its edge tends to grow with model size</strong>. Java at 1.5B is the clear exception: 19.02% vs 25.54% pass@1, a 25.5% relative drop.</p>
 
         <table>
           <thead>
             <tr>
               <th style="width:18%">Language</th>
-              <th style="width:14%">Scale</th>
+              <th style="width:18%">Model</th>
               <th>MT-QLoRA pass@1</th>
               <th>ST-QLoRA pass@1</th>
               <th>Direction</th>
             </tr>
           </thead>
           <tbody>
-            <tr><td rowspan="3">Python</td><td>0.5B</td><td colspan="2">MT-QLoRA matches ST-QLoRA</td><td><span class="badge-similar">Similar</span></td></tr>
+            <tr><td rowspan="5">Python</td><td>0.5B</td><td>15.79%</td><td>15.79%</td><td><span class="badge-similar">Same</span></td></tr>
             <tr><td>1.5B</td><td>18.95%</td><td>16.84%</td><td><span class="badge-improved">MT &gt; ST</span></td></tr>
             <tr><td>3B</td><td>21.05%</td><td>20.53%</td><td><span class="badge-improved">MT &gt; ST</span></td></tr>
-            <tr><td rowspan="3">Java</td><td>0.5B</td><td colspan="2">Comparable</td><td><span class="badge-similar">Similar</span></td></tr>
-            <tr><td>1.5B</td><td colspan="2">Comparable</td><td><span class="badge-similar">Similar</span></td></tr>
+            <tr><td>7B</td><td>20.53%</td><td>22.63%</td><td><span class="badge-declined">ST &gt; MT</span></td></tr>
+            <tr><td>CodeLlama-7B</td><td>21.58%</td><td>21.58%</td><td><span class="badge-similar">Same</span></td></tr>
+            <tr><td rowspan="5">Java</td><td>0.5B</td><td>20.11%</td><td>21.74%</td><td><span class="badge-declined">ST &gt; MT</span></td></tr>
+            <tr><td>1.5B</td><td>19.02%</td><td>25.54%</td><td><span class="badge-declined">ST &gt; MT</span></td></tr>
             <tr><td>3B</td><td>32.07%</td><td>29.89%</td><td><span class="badge-improved">MT &gt; ST</span></td></tr>
+            <tr><td>7B</td><td>33.70%</td><td>30.43%</td><td><span class="badge-improved">MT &gt; ST</span></td></tr>
+            <tr><td>CodeLlama-7B</td><td>25.00%</td><td>33.15%</td><td><span class="badge-declined">ST &gt; MT</span></td></tr>
           </tbody>
         </table>
-        <p class="table-caption">RQ1 &mdash; pass@1 for code generation: MT-QLoRA vs ST-QLoRA across the three Qwen2.5-Coder scales.</p>
+        <p class="table-caption">RQ1 &mdash; pass@1 for code generation, MT-QLoRA vs ST-QLoRA (Tables 6 and 7). Rows without a family name are Qwen2.5-Coder.</p>
 
-        <p>Static analysis adds an interesting wrinkle: <strong>larger MT models produce simpler, more maintainable code</strong>. At 3B for Python, MT-QLoRA showed <strong>33.8% fewer maintainability issues</strong> and <strong>19.3% lower cognitive complexity</strong> than ST-QLoRA. McNemar (for pass@1) and Wilcoxon (for continuous metrics) tests with Holm-Bonferroni correction did not find statistically significant differences in raw pass@1, so the safe summary is: <strong>MT-QLoRA matches ST-QLoRA on correctness while improving non-functional code quality at scale</strong>.</p>
+        <p>Static analysis follows the same scale pattern. Smaller MT models produce more quality issues: Python SonarCloud maintainability issues rise from 53 to 90 at 0.5B and from 45 to 72 at 1.5B. At 3B the trend reverses: for Python, MT-QLoRA has <strong>33.8% fewer maintainability issues</strong> (106 vs 160) and <strong>19.3% lower cognitive complexity</strong> (549 vs 680) than ST-QLoRA. Summed over 0.5B&ndash;3B, Python MT code has slightly more issues (cyclomatic complexity +7.1%), while Java MT code has slightly fewer (PMD &minus;2.4%, SonarCloud &minus;4.0%). McNemar (for pass@1) and Wilcoxon (for quality metrics) tests with Holm-Bonferroni correction found no significant difference at any scale from 0.5B to 3B in either language, so the safe summary is: <strong>MT-QLoRA matches ST-QLoRA on correctness, and larger MT models balance correctness and quality better</strong>.</p>
 
         <h3>Code Translation</h3>
 
-        <p>Translation is more sensitive to direction and scale.</p>
+        <p>Translation is more sensitive to direction and scale (CodeBLEU, Tables 8 and 9).</p>
         <ul>
-          <li><strong>Java&rarr;C#</strong>: MT-QLoRA underperforms ST-QLoRA at 0.5B and 3B but slightly improves at <strong>1.5B</strong>. MT-QLoRA also consistently produces <strong>more compact</strong> Java&rarr;C# translations.</li>
-          <li><strong>C#&rarr;Java</strong>: similar pattern with <strong>1.5B as the sweet spot</strong>. At 3B, C#&rarr;Java MT-QLoRA reduces <strong>PMD issues by 13.8%</strong> and <strong>SonarCloud issues by 22.7%</strong>.</li>
+          <li><strong>Java&rarr;C#</strong>: MT-QLoRA trails ST-QLoRA at 0.5B (68.92% vs 75.77%) and 3B (62.88% vs 66.83%) and is slightly ahead at <strong>1.5B</strong> (73.08% vs 72.27%). MT-QLoRA produces <strong>more compact</strong> C# at every scale (2.3&ndash;4.8% fewer lines). Roslyn issues swing widely: 66.8% fewer than ST-QLoRA at 1.5B, but 137.0% more at 3B.</li>
+          <li><strong>C#&rarr;Java</strong>: again <strong>1.5B is the sweet spot</strong> (70.72% vs 69.35%); MT-QLoRA trails at 0.5B (68.37% vs 75.36%) and 3B (71.22% vs 72.81%). At 3B, MT-QLoRA still reduces <strong>PMD issues by 13.8%</strong> and <strong>SonarCloud issues by 22.7%</strong>.</li>
         </ul>
 
-        <p>So translation is the task where MT-QLoRA's quality advantage shows up most clearly in non-functional metrics, even when surface-level translation metrics are mixed.</p>
+        <p>So translation has no consistent winner. Gains in one quality signal (fewer lines, lower complexity) can sit next to regressions in another (Roslyn for C#). Wilcoxon tests find significant CodeBLEU differences for Java&rarr;C# at 0.5B, 1.5B, and 3B, but for C#&rarr;Java only at 0.5B, and effect sizes on quality metrics are small.</p>
 
         <h3>Code Summarization</h3>
 
@@ -467,27 +477,37 @@
           <thead>
             <tr>
               <th style="width:18%">Language</th>
-              <th style="width:14%">Scale</th>
-              <th>BLEU change (MT-QLoRA vs ST-QLoRA)</th>
+              <th style="width:18%">Model</th>
+              <th>BLEU (MT-QLoRA vs ST-QLoRA)</th>
               <th>Direction</th>
             </tr>
           </thead>
           <tbody>
-            <tr><td rowspan="3">Python</td><td>0.5B</td><td>+36.0%</td><td><span class="badge-improved">MT &gt; ST</span></td></tr>
-            <tr><td>1.5B</td><td>+51.5%</td><td><span class="badge-improved">MT &gt; ST</span></td></tr>
-            <tr><td>3B</td><td>+28.3%</td><td><span class="badge-improved">MT &gt; ST</span></td></tr>
-            <tr><td rowspan="3">Java</td><td>0.5B</td><td colspan="2"><span class="badge-declined">ST &gt; MT</span> (advantage strengthens with scale)</td></tr>
-            <tr><td>1.5B</td><td colspan="2"><span class="badge-declined">ST &gt; MT</span></td></tr>
-            <tr><td>3B</td><td colspan="2"><span class="badge-declined">ST &gt; MT</span></td></tr>
+            <tr><td rowspan="5">Python</td><td>0.5B</td><td>19.43% vs 14.29% (+36.0%)</td><td><span class="badge-improved">MT &gt; ST</span></td></tr>
+            <tr><td>1.5B</td><td>22.90% vs 15.12% (+51.5%)</td><td><span class="badge-improved">MT &gt; ST</span></td></tr>
+            <tr><td>3B</td><td>29.90% vs 23.31% (+28.3%)</td><td><span class="badge-improved">MT &gt; ST</span></td></tr>
+            <tr><td>7B</td><td>30.80% vs 16.49% (+86.8%)</td><td><span class="badge-improved">MT &gt; ST</span></td></tr>
+            <tr><td>CodeLlama-7B</td><td>30.89% vs 27.98%</td><td><span class="badge-improved">MT &gt; ST</span> on most metrics; ST leads on ROUGE-L and BERTScore</td></tr>
+            <tr><td rowspan="5">Java</td><td>0.5B</td><td>7.18% vs 7.10%</td><td><span class="badge-mixed">Mixed</span> &mdash; MT ahead on BLEU and ROUGE-L, behind on METEOR, chrF, BERTScore, SIDE</td></tr>
+            <tr><td>1.5B</td><td>8.12% vs 8.48%</td><td><span class="badge-declined">ST &gt; MT</span> on all metrics but SIDE</td></tr>
+            <tr><td>3B</td><td>7.63% vs 8.73%</td><td><span class="badge-declined">ST &gt; MT</span> on every metric</td></tr>
+            <tr><td>7B</td><td>8.37% vs 8.19%</td><td><span class="badge-mixed">Mixed</span> &mdash; split across metrics</td></tr>
+            <tr><td>CodeLlama-7B</td><td>10.96% vs 8.50%</td><td><span class="badge-improved">MT &gt; ST</span> on most metrics</td></tr>
           </tbody>
         </table>
-        <p class="table-caption">RQ1 &mdash; BLEU comparison for code summarization. Python benefits massively from multi-task training; Java's pattern reverses.</p>
+        <p class="table-caption">RQ1 &mdash; code summarization (Table 10). Python favors multi-task training at every scale and in both families; Java favors single-task training from 1.5B to 3B, but not at 7B or for CodeLlama.</p>
 
-        <p>The <strong>LLM-as-a-judge</strong> evaluation (GPT-5 Mini) tells a slightly more nuanced story: for Java summarization, no significant quality differences between MT-QLoRA and ST-QLoRA, while for Python, MT-QLoRA's advantages remain significant at the larger scales.</p>
+        <p>The <strong>LLM-as-a-judge</strong> evaluation (GPT-5 Mini) tells a slightly more nuanced story: for Java summarization, no significant quality differences between MT-QLoRA and ST-QLoRA, while for Python there is no difference at 0.5B but MT-QLoRA is significantly better on all three dimensions at 1.5B and 3B.</p>
+
+        <h3>7B and CodeLlama-7B</h3>
+
+        <p>At 7B the picture splits by task. Code generation diverges by language: MT-QLoRA leads on Java (33.70% vs 30.43%) but trails on Python (20.53% vs 22.63%), a reversal of the 3B result for Python. Python summarization still favors MT-QLoRA by a wide margin (BLEU 30.80% vs 16.49%). Translation breaks: ST-QLoRA beats MT-QLoRA by 40.3% on Java&rarr;C# (77.70% vs 55.37%) and 43.0% on C#&rarr;Java (71.26% vs 49.83%), a much bigger gap than at 3B. The cause is left open; one candidate the paper names is that the adapter size is fixed, so the trainable share falls to 0.27% at 7B, while translation has by far the smallest share of the training data.</p>
+
+        <p>On CodeLlama-7B, the translation and Python summarization results repeat: ST-QLoRA wins translation in both directions (CodeBLEU 82.22% vs 79.45% on Java&rarr;C#, 82.48% vs 79.98% on C#&rarr;Java), and MT-QLoRA wins Python summarization on most metrics. Code generation does not repeat: pass@1 is tied on Python and ST-QLoRA leads on Java (33.15% vs 25.00%), even though CodeLlama's MT-QLoRA Java code is cleaner (PMD &minus;20.7%, SonarCloud &minus;20.4%). None of the CodeLlama differences is statistically significant.</p>
 
         <div class="callout callout-detail">
           <div class="callout-label">RQ1 takeaway</div>
-          <p>MT-QLoRA is genuinely competitive with ST-QLoRA on functional metrics, and frequently better on non-functional code quality &mdash; especially at 1.5B and 3B. The clearest exception is <strong>Java summarization</strong>, where single-task training retains an advantage that grows with scale.</p>
+          <p>Up to 3B, MT-QLoRA is competitive with ST-QLoRA on code generation, and larger MT models balance correctness and quality better; none of the generation gaps tested (0.5B&ndash;3B and CodeLlama) is statistically significant. Python summarization favors multi-task training at every scale and in both model families. The exceptions are <strong>translation</strong>, where MT-QLoRA wins only at 1.5B and falls far behind at 7B, and <strong>Java summarization</strong>, where single-task training holds an advantage from 1.5B to 3B.</p>
         </div>
 
         <!-- Section 4: RQ2 -->
@@ -497,7 +517,7 @@
 
         <h3>Code Generation</h3>
 
-        <p>For both Python and Java, <strong>MT-QLoRA matches or exceeds MT-FFT</strong>, with the strongest gains at the 3B scale.</p>
+        <p>For both Python and Java, <strong>MT-QLoRA matches or exceeds MT-FFT in most configurations</strong>, and the gap grows with scale. Java at 1.5B is the one case where MT-FFT is ahead. McNemar tests find no significant pass@1 difference from 0.5B to 3B, so on correctness the two are at parity there.</p>
 
         <h3>Table 11 &mdash; Python Code Generation: MT-QLoRA vs MT-FFT</h3>
 
@@ -512,12 +532,13 @@
             </tr>
           </thead>
           <tbody>
-            <tr><td>0.5B</td><td colspan="2"><span class="badge-improved">MT-QLoRA &gt; MT-FFT</span></td><td><span class="badge-improved">Improved</span></td><td>Lower complexity overall</td></tr>
-            <tr><td>1.5B</td><td colspan="2"><span class="badge-improved">MT-QLoRA &gt; MT-FFT</span></td><td><span class="badge-improved">Improved</span></td><td>Lower complexity overall</td></tr>
-            <tr><td>3B</td><td>21.05%</td><td>17.37%</td><td><span class="badge-improved">+21.2%</span></td><td><strong>32% lower CyC</strong> for MT-QLoRA; fewer Pylint and SonarCloud issues</td></tr>
+            <tr><td>0.5B</td><td>15.79%</td><td>14.74%</td><td><span class="badge-improved">+7.1%</span></td><td>CyC 812 vs 928 (&minus;12.5%); Pylint &minus;13.9%; SonarCloud maintainability &minus;32.3%</td></tr>
+            <tr><td>1.5B</td><td>18.95%</td><td>15.79%</td><td><span class="badge-improved">+20.0%</span></td><td>CyC 882 vs 928 (&minus;5.0%); slightly more Pylint issues</td></tr>
+            <tr><td>3B</td><td>21.05%</td><td>17.37%</td><td><span class="badge-improved">+21.2%</span></td><td><strong>32.0% lower CyC</strong> (677 vs 996); Pylint &minus;9.0%; SonarCloud maintainability &minus;21.5%; 35.0% fewer lines</td></tr>
+            <tr><td>7B</td><td>20.53%</td><td>14.74%</td><td><span class="badge-improved">+39.3%</span></td><td>CyC 732 vs 782</td></tr>
           </tbody>
         </table>
-        <p class="table-caption">Table 11. Python code generation, MT-QLoRA vs MT-FFT. MT-QLoRA improves pass@1 at every scale and produces substantially less complex code at 3B.</p>
+        <p class="table-caption">Table 11. Python code generation, MT-QLoRA vs MT-FFT. MT-QLoRA has higher pass@1 at every scale and much less complex code at 3B.</p>
 
         <h3>Table 12 &mdash; Java Code Generation: MT-QLoRA vs MT-FFT</h3>
 
@@ -532,68 +553,99 @@
             </tr>
           </thead>
           <tbody>
-            <tr><td>0.5B</td><td colspan="2"><span class="badge-similar">Comparable</span></td><td><span class="badge-similar">Similar</span></td><td>Comparable static-analysis profile</td></tr>
-            <tr><td>1.5B</td><td colspan="2"><span class="badge-improved">MT-QLoRA &ge; MT-FFT</span></td><td><span class="badge-improved">Improved</span></td><td>Comparable to slightly fewer issues</td></tr>
-            <tr><td>3B</td><td>32.07%</td><td>26.63%</td><td><span class="badge-improved">+20.4%</span></td><td>Fewer PMD and SonarCloud issues vs MT-FFT</td></tr>
+            <tr><td>0.5B</td><td>20.11%</td><td>19.02%</td><td><span class="badge-improved">+5.7%</span></td><td>CyC 697 vs 649 (+7.4%); fewer PMD issues</td></tr>
+            <tr><td>1.5B</td><td>19.02%</td><td>20.11%</td><td><span class="badge-declined">&minus;5.4%</span></td><td>CyC 589 vs 676 (&minus;12.9%); 18.5% fewer lines; fewer PMD issues</td></tr>
+            <tr><td>3B</td><td>32.07%</td><td>26.63%</td><td><span class="badge-improved">+20.4%</span></td><td>CyC 558 vs 607 (&minus;8.1%); fewer PMD and SonarCloud issues</td></tr>
+            <tr><td>7B</td><td>33.70%</td><td>18.48%</td><td><span class="badge-improved">+82.4%</span></td><td>CyC 663 vs 778</td></tr>
           </tbody>
         </table>
-        <p class="table-caption">Table 12. Java code generation, MT-QLoRA vs MT-FFT. MT-QLoRA is substantially better at 3B on both functional and non-functional metrics.</p>
+        <p class="table-caption">Table 12. Java code generation, MT-QLoRA vs MT-FFT. MT-FFT leads only at 1.5B; MT-QLoRA is far ahead at 3B and 7B. Summed over 0.5B&ndash;3B, MT-QLoRA has 6.3% fewer PMD violations.</p>
 
         <h3>Code Translation</h3>
 
-        <p>Translation results are more mixed:</p>
+        <p>Translation mostly favors full fine-tuning (Tables 13 and 14):</p>
         <ul>
-          <li><strong>Java&rarr;C#</strong>: MT-FFT generally leads on CodeBLEU.</li>
-          <li><strong>C#&rarr;Java</strong>: MT-QLoRA is competitive at 1.5B and shows <em>large</em> non-functional quality improvements at 3B &mdash; <strong>SonarCloud issues drop by 69.6%</strong> versus MT-FFT.</li>
+          <li><strong>Java&rarr;C#</strong>: MT-FFT leads on CodeBLEU at every scale (74.91% vs 68.92% at 0.5B, 78.53% vs 73.08% at 1.5B, 66.38% vs 62.88% at 3B), and the differences are significant (with a negligible effect size). MT-QLoRA also has 40.9% more Roslyn issues summed over 0.5B&ndash;3B.</li>
+          <li><strong>C#&rarr;Java</strong>: MT-FFT leads at 0.5B and 3B; MT-QLoRA is slightly ahead at 1.5B (70.72% vs 70.07%). At 3B, MT-QLoRA code is much cleaner: <strong>SonarCloud issues drop by 69.6%</strong> (435 vs 1,430), and PMD issues are 18.7% lower summed over 0.5B&ndash;3B.</li>
+          <li><strong>7B</strong>: MT-FFT leads by 30.2% on Java&rarr;C# (72.10% vs 55.37%) and 41.6% on C#&rarr;Java (70.54% vs 49.83%), against gaps of at most 8% at the smaller scales.</li>
         </ul>
 
         <h3>Code Summarization</h3>
 
-        <p>The biggest gap between MT-QLoRA and MT-FFT shows up in Python summarization, where MT-QLoRA dramatically outperforms MT-FFT on BLEU at every scale.</p>
+        <p>The biggest gap between MT-QLoRA and MT-FFT shows up in Python summarization, where MT-QLoRA far outperforms MT-FFT on BLEU at every scale.</p>
 
         <table>
           <thead>
             <tr>
               <th style="width:18%">Language</th>
               <th style="width:14%">Scale</th>
-              <th>BLEU change (MT-QLoRA vs MT-FFT)</th>
+              <th>BLEU (MT-QLoRA vs MT-FFT)</th>
               <th>Direction</th>
             </tr>
           </thead>
           <tbody>
-            <tr><td rowspan="3">Python</td><td>0.5B</td><td>+103.9%</td><td><span class="badge-improved">MT-QLoRA &gt; MT-FFT</span></td></tr>
-            <tr><td>1.5B</td><td>+80.7%</td><td><span class="badge-improved">MT-QLoRA &gt; MT-FFT</span></td></tr>
-            <tr><td>3B</td><td>+32.7%</td><td><span class="badge-improved">MT-QLoRA &gt; MT-FFT</span></td></tr>
-            <tr><td rowspan="3">Java</td><td>0.5B</td><td colspan="2"><span class="badge-mixed">Mixed</span> &mdash; MT-QLoRA better on overlap metrics (METEOR, ROUGE-L, SIDE); MT-FFT better on BERTScore</td></tr>
-            <tr><td>1.5B</td><td colspan="2"><span class="badge-mixed">Mixed</span></td></tr>
-            <tr><td>3B</td><td colspan="2"><span class="badge-mixed">Mixed</span> &mdash; gap on BERTScore narrows at scale</td></tr>
+            <tr><td rowspan="4">Python</td><td>0.5B</td><td>19.43% vs 9.53% (+103.9%)</td><td><span class="badge-improved">MT-QLoRA &gt; MT-FFT</span></td></tr>
+            <tr><td>1.5B</td><td>22.90% vs 12.67% (+80.7%)</td><td><span class="badge-improved">MT-QLoRA &gt; MT-FFT</span></td></tr>
+            <tr><td>3B</td><td>29.90% vs 22.54% (+32.7%)</td><td><span class="badge-improved">MT-QLoRA &gt; MT-FFT</span></td></tr>
+            <tr><td>7B</td><td>30.80% vs 9.76% (+215.6%)</td><td><span class="badge-improved">MT-QLoRA &gt; MT-FFT</span></td></tr>
+            <tr><td rowspan="4">Java</td><td>0.5B</td><td>7.18% vs 7.70%</td><td><span class="badge-mixed">Mixed</span> &mdash; MT-QLoRA better on METEOR, ROUGE-L, SIDE; MT-FFT better on BLEU, chrF, BERTScore</td></tr>
+            <tr><td>1.5B</td><td>8.12% vs 7.43%</td><td><span class="badge-mixed">Mixed</span> &mdash; MT-QLoRA better on all metrics but BERTScore</td></tr>
+            <tr><td>3B</td><td>7.63% vs 7.90%</td><td><span class="badge-mixed">Mixed</span> &mdash; MT-QLoRA better on all metrics but BLEU</td></tr>
+            <tr><td>7B</td><td>8.37% vs 6.77%</td><td><span class="badge-mixed">Mixed</span> &mdash; close overall; MT-QLoRA better on all metrics but SIDE</td></tr>
           </tbody>
         </table>
-        <p class="table-caption">RQ2 &mdash; Code summarization. Python heavily favors MT-QLoRA over MT-FFT; Java is metric-dependent.</p>
+        <p class="table-caption">RQ2 &mdash; Code summarization (Table 15). Python heavily favors MT-QLoRA over MT-FFT; Java is metric-dependent.</p>
+
+        <p>The LLM judge shrinks these gaps. For Java, judge scores show no significant difference between MT-QLoRA and MT-FFT. For Python, MT-QLoRA is significantly better on all three dimensions, but the absolute scores are close: at 0.5B, BLEU rises 103.9% while content adequacy barely moves (1.818 vs 1.806).</p>
+
+        <h3>Training Cost</h3>
+
+        <p>MT-QLoRA also trains far fewer parameters and needs less GPU memory. The adapter configuration is the same at every scale, so the trainable share falls as the model grows.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="width:14%">Scale</th>
+              <th>Peak GPU memory, MT-FFT</th>
+              <th>Peak GPU memory, MT-QLoRA</th>
+              <th>Trainable params, MT-FFT</th>
+              <th>Trainable params, MT-QLoRA</th>
+              <th>Reduction</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1.5B</td><td>13.04 GB</td><td>10.48 GB</td><td>1.54B (100%)</td><td>9.2M (0.60%)</td><td>167&times;</td></tr>
+            <tr><td>3B</td><td>23.28 GB</td><td>15.68 GB</td><td>3.09B (100%)</td><td>15.0M (0.49%)</td><td>206&times;</td></tr>
+            <tr><td>7B</td><td>39.92 GB</td><td>24.15 GB</td><td>7.62B (100%)</td><td>20.2M (0.27%)</td><td>377&times;</td></tr>
+          </tbody>
+        </table>
+        <p class="table-caption">Table 16. Training cost of MT-FFT and MT-QLoRA (reported for 1.5B, 3B, and 7B).</p>
 
         <div class="callout callout-warning">
           <div class="callout-label">RQ2 takeaway</div>
-          <p>Multi-task QLoRA is <strong>not just cheaper</strong> than multi-task full fine-tuning &mdash; it is often <strong>better</strong>, particularly at 3B and particularly for Python. The places MT-FFT still leads (Java&rarr;C# CodeBLEU, Java summarization BERTScore at small scales) are narrow and metric-specific, not a general superiority.</p>
+          <p>Multi-task QLoRA is <strong>not just cheaper</strong> than multi-task full fine-tuning &mdash; it has higher pass@1 on code generation (statistically at parity from 0.5B to 3B) and clearly <strong>better</strong> Python summarization, and the numerical gap is largest at 3B and 7B. Translation is the exception: MT-FFT leads on CodeBLEU in five of the six direction-and-scale pairs from 0.5B to 3B, and by 30&ndash;42% at 7B. Java summarization is roughly a tie.</p>
         </div>
 
         <!-- Section 5: Key Takeaways -->
         <h2 id="takeaways">5. Key Takeaways</h2>
 
         <ul>
-          <li><strong>Multi-task QLoRA is not a cost-saving compromise.</strong> It can match or beat both single-task QLoRA and multi-task full fine-tuning, particularly at the 3B scale.</li>
-          <li><strong>Bigger helps.</strong> Larger models are better at balancing multiple objectives within a parameter-efficient framework. The 3B Qwen2.5-Coder-Instruct is where MT-QLoRA's advantages are most consistent.</li>
-          <li><strong>Code quality is not systematically degraded by multi-task PEFT.</strong> Across Pylint, PMD, Roslyn, Lizard, and SonarCloud, MT-QLoRA frequently produces lower-complexity, more-maintainable code than both ST-QLoRA and MT-FFT &mdash; contradicting the common assumption that multi-task PEFT must trade off code quality.</li>
-          <li><strong>Language-dependent effects exist.</strong> Python benefits more from multi-task training; Java summarization tends to favor single-task training, with the gap widening at scale.</li>
-          <li><strong>Direction matters in translation.</strong> The Java&rarr;C# and C#&rarr;Java directions behave differently, and 1.5B is the most consistent &ldquo;sweet spot&rdquo; for MT-QLoRA on translation.</li>
-          <li><strong>First joint evaluation of correctness <em>and</em> quality.</strong> To our knowledge, this is the first study of multi-task PEFT in code that evaluates functional correctness and non-functional code quality together &mdash; a more realistic standard for whether the produced code is actually deployable.</li>
+          <li><strong>Multi-task QLoRA is not a cost-saving compromise for generation and summarization.</strong> At 1.5B, 3B, and 7B it is competitive with or better than both single-task QLoRA and multi-task full fine-tuning on most of these comparisons, while training 0.27&ndash;0.60% of the parameters. Translation is the exception.</li>
+          <li><strong>Bigger helps, up to a point.</strong> Larger models balance correctness and quality better; smaller models keep functionality but show more quality issues. At 7B the lead over MT-FFT grows for code generation (Java pass@1 33.70% vs 18.48%) and Python summarization, but translation falls well behind both ST-QLoRA and MT-FFT.</li>
+          <li><strong>Code quality holds up for generation.</strong> Against MT-FFT, MT-QLoRA code is often simpler and cleaner (32.0% lower Python cyclomatic complexity at 3B; 6.3% fewer Java PMD violations over 0.5B&ndash;3B). Against ST-QLoRA, generation quality differences are small and not statistically significant; in translation some are significant, and Roslyn results swing widely (&minus;66.8% to +137.0%).</li>
+          <li><strong>Language-dependent effects exist.</strong> Python summarization benefits from multi-task training at every scale and on CodeLlama on most metrics; Java summarization favors single-task training from 1.5B to 3B, but not at 7B.</li>
+          <li><strong>Direction matters in translation.</strong> The Java&rarr;C# and C#&rarr;Java directions behave differently, 1.5B is the most consistent &ldquo;sweet spot&rdquo; for MT-QLoRA on translation up to 3B, and at 7B MT-QLoRA falls behind in both directions.</li>
+          <li><strong>The task mix matters.</strong> In 3B ablations, balanced task sampling narrows the Java&rarr;C# gap to ST-QLoRA from &minus;5.9% to &minus;1.1% but lowers C#&rarr;Java CodeBLEU by 7.9%. Dropping code generation from the mix breaks translation (Java&rarr;C# CodeBLEU falls to 5.35%), while training generation with translation alone gives the largest gains (73.71% Java&rarr;C# CodeBLEU, 36.41% Java pass@1).</li>
+          <li><strong>A second model family agrees in part.</strong> On CodeLlama-7B the translation and Python summarization results repeat; the code generation results do not.</li>
+          <li><strong>Correctness <em>and</em> quality together.</strong> To our knowledge, this is one of the first studies of multi-task QLoRA for code that evaluates functional correctness and non-functional code quality together &mdash; a more realistic standard for whether the produced code is actually deployable.</li>
         </ul>
 
         <!-- Section 6: Bottom Line -->
         <h2 id="bottom-line">6. Bottom Line</h2>
 
-        <p>A single QLoRA-optimized model can effectively handle code generation, code translation, and code summarization simultaneously, and the resulting code holds up under both rigorous static analysis and LLM-based evaluation. For practitioners, the practical message is straightforward: <strong>train one MT-QLoRA model on top of a Qwen2.5-Coder-class base &mdash; preferably at 1.5B or 3B &mdash; before reaching for either per-task adapters or full fine-tuning</strong>. The exceptions (Java summarization, Java&rarr;C# CodeBLEU) are worth knowing, but they don't change the headline.</p>
+        <p>A single QLoRA-optimized model can handle code generation, code translation, and code summarization at once, though translation is its weak spot, especially at 7B. For generation and summarization it mostly holds up against both per-task adapters and full fine-tuning, under static analysis and LLM-based evaluation, while training 0.27&ndash;0.60% of the parameters and using 60&ndash;80% of full fine-tuning's peak GPU memory. Our reading for practitioners: <strong>one MT-QLoRA model on a Qwen2.5-Coder-class base is a reasonable default for generation and summarization; for translation, compare it against single-task adapters or full fine-tuning first</strong>, since MT-QLoRA trails in most translation settings and falls far behind at 7B. Java generation at 0.5B and 1.5B and Java summarization from 1.5B to 3B also favor single-task training.</p>
 
-        <p>For researchers, the more interesting message is methodological: evaluating multi-task PEFT on functional metrics alone is leaving most of the story on the table. Static analysis and LLM-as-a-judge change the picture in non-trivial ways &mdash; usually in MT-QLoRA's favor.</p>
+        <p>For researchers, the more interesting message is methodological: evaluating multi-task PEFT on functional metrics alone gives an incomplete picture. Static analysis and LLM-as-a-judge change the picture in non-trivial ways, and BLEU can move a lot while judged quality barely changes. The results also cover QLoRA only, as one method from the LoRA family; whether they hold for other PEFT methods is open.</p>
 
         <div class="paper-links">
           <a href="https://arxiv.org/abs/2601.15094" target="_blank" rel="noopener noreferrer"><i class="fas fa-file-alt"></i>&nbsp; Read the preprint (arXiv)</a>
