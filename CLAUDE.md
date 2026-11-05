@@ -17,6 +17,7 @@ Personal academic website for Zahidul Haque Alvi.
 - `blog/index.html` — Blog listing (loads posts from `/blog.json`)
 - `blog/*.html` — Individual blog post pages
 - `assets/` — CSS, JS, fonts, images
+- `projects/multitask_peft/`, `projects/peft_review/` — paper pages with interactive figures: shared helpers in `assets/js/paper-viz.js` + `assets/css/paper-viz.css`, data and figure code in `assets/js/multitask-peft-figures.js` and `assets/js/peft-review-figures.js` (every value cites its table/figure in the paper)
 
 ## Key Conventions
 - Navigation is duplicated inline in every page (not shared/templated) — must update ALL pages when adding/removing nav items

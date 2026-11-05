@@ -98,24 +98,6 @@
       border: 1px solid rgba(251, 191, 36, 0.1) !important;
     }
 
-    /* Callout boxes */
-    .callout { border-radius: 4px; padding: 16px 20px; margin: 24px 0; font-size: 0.95rem; }
-    .callout p:last-child { margin-bottom: 0; }
-    .callout-label {
-      font-family: 'Roboto', sans-serif;
-      font-weight: 700;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 8px;
-    }
-    .callout-insight { background: rgba(59, 130, 246, 0.08) !important; border: 1px solid rgba(59, 130, 246, 0.25); border-left: 3px solid #3b82f6; }
-    .callout-insight .callout-label { color: #3b82f6 !important; }
-    .callout-warning { background: rgba(245, 158, 11, 0.08) !important; border: 1px solid rgba(245, 158, 11, 0.25); border-left: 3px solid #f59e0b; }
-    .callout-warning .callout-label { color: #f59e0b !important; }
-    .callout-detail { background: rgba(147, 51, 234, 0.08) !important; border: 1px solid rgba(147, 51, 234, 0.25); border-left: 3px solid #9333ea; }
-    .callout-detail .callout-label { color: #9333ea !important; }
-
     /* Table of Contents */
     .toc {
       background: rgba(30, 30, 30, 0.6) !important;
@@ -161,66 +143,6 @@
       vertical-align: top;
     }
     .article-body tr:nth-child(even) td { background: rgba(25, 25, 25, 0.5) !important; }
-
-    .table-caption {
-      font-family: 'Roboto', sans-serif;
-      font-size: 0.85rem;
-      color: #888 !important;
-      text-align: center;
-      margin: -10px 0 24px 0;
-      font-style: italic;
-    }
-
-    /* PEFT taxonomy diagram */
-    .taxonomy {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 14px;
-      margin: 24px 0 8px 0;
-    }
-    .taxonomy-card {
-      background: rgba(30, 30, 30, 0.6) !important;
-      border: 1px solid rgba(251, 191, 36, 0.15);
-      border-radius: 4px;
-      padding: 16px 18px;
-    }
-    .taxonomy-card h4 {
-      font-family: 'Roboto', sans-serif !important;
-      font-size: 0.85rem !important;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #fbbf24 !important;
-      margin: 0 0 10px 0 !important;
-      padding-bottom: 8px;
-      border-bottom: 1px solid rgba(251, 191, 36, 0.15);
-    }
-    .taxonomy-card ul {
-      list-style: none !important;
-      padding-left: 0 !important;
-      margin: 0 !important;
-      font-family: 'Roboto', sans-serif;
-      font-size: 0.88rem;
-    }
-    .taxonomy-card li {
-      padding: 4px 0;
-      color: #d4d4d4 !important;
-      border-bottom: 1px dashed rgba(251, 191, 36, 0.05);
-    }
-    .taxonomy-card li:last-child { border-bottom: none; }
-    .taxonomy-card li code {
-      background: transparent !important;
-      border: none !important;
-      color: #fbbf24 !important;
-      padding: 0 !important;
-      font-size: 0.85rem;
-    }
-
-    /* Status badges in tables */
-    .badge-improved { color: #34d399 !important; font-weight: 600; }
-    .badge-similar { color: #fbbf24 !important; font-weight: 600; }
-    .badge-declined { color: #f87171 !important; font-weight: 600; }
-    .badge-gain { color: #34d399 !important; font-weight: 600; }
-    .badge-mixed { color: #fbbf24 !important; font-weight: 600; }
 
     /* Final links block */
     .paper-links {
@@ -275,6 +197,7 @@
   <link rel="stylesheet" href="/assets/css/academicons.min.css">
   <link rel="stylesheet" href="/assets/css/main.css">
   <link rel="canonical" href="/projects/peft_review/">
+  <link rel="stylesheet" href="/assets/css/paper-viz.css">
 </head>
 <body>
   <!-- Header -->
@@ -313,9 +236,18 @@
       <!-- Article Header -->
       <div class="article-header">
         <h1>A Systematic Literature Review of Parameter-Efficient Fine-Tuning for Large Code Models</h1>
-        <p class="article-subtitle">Surveying 28 peer-reviewed studies, 19 software engineering tasks, and four families of PEFT methods to map how parameter-efficient fine-tuning is reshaping the way we adapt large code models.</p>
+        <p class="article-subtitle">Surveying 28 studies, 19 software engineering tasks, and four families of PEFT methods to map how parameter-efficient fine-tuning is reshaping the way we adapt large code models.</p>
         <p class="article-meta">ACM Transactions on Software Engineering and Methodology (TOSEM), 2026 &middot; DOI: <a href="https://doi.org/10.1145/3796522" target="_blank" rel="noopener noreferrer">10.1145/3796522</a></p>
         <p class="article-authors">Saima Afrin*, Md Zahidul Haque*, Antonio Mastropaolo &nbsp;&middot;&nbsp; *equal contribution</p>
+      </div>
+
+      <div class="pv-tldr">
+        <div class="pv-tldr-label">In short</div>
+        <ul>
+          <li>Most PEFT work in software engineering targets code summarization and code generation, on encoder-decoder models such as CodeT5, with LoRA as the most used method.</li>
+          <li>Where a study compares PEFT with full fine-tuning of the same model, PEFT usually matches or beats it. Code translation and clone detection have the most results where it does worse.</li>
+          <li>The evidence still has gaps in both methods and tasks; Section 6 lists them.</li>
+        </ul>
       </div>
 
       <!-- Table of Contents -->
@@ -325,251 +257,106 @@
           <li><a href="#problem">The Problem: Full Fine-Tuning Doesn't Scale</a></li>
           <li><a href="#what-we-did">What We Did: A Systematic Review</a></li>
           <li><a href="#rq1">RQ1 &mdash; Which SE Tasks Use PEFT?</a></li>
-          <li><a href="#rq2">RQ2 &mdash; Which Architectures and PEFT Methods?</a></li>
+          <li><a href="#rq2">RQ2 &mdash; Which Models and PEFT Methods?</a></li>
           <li><a href="#rq3">RQ3 &mdash; How Does PEFT Compare to Full Fine-Tuning?</a></li>
-          <li><a href="#missing">What's Still Missing</a></li>
-          <li><a href="#bottom-line">Bottom Line</a></li>
+          <li><a href="#next">What Future Work Should Do</a></li>
+          <li><a href="#meaning">What It Means</a></li>
         </ol>
       </div>
 
       <!-- Article Body -->
       <div class="article-body">
 
-        <!-- Section 1: The Problem -->
         <h2 id="problem">1. The Problem: Full Fine-Tuning Doesn't Scale</h2>
 
-        <p>Large code models (LCMs) &mdash; CodeLlama, DeepSeek-Coder, CodeT5, StarCoder, and the rest of the family &mdash; have pushed code intelligence forward across nearly every software engineering task we care about. But getting these models to actually do something useful for <em>your</em> task usually means fine-tuning, and full fine-tuning is brutal. Updating every weight, holding all gradients in memory, and storing one full model copy per task means hundreds of millions to billions of parameters touched per task, on hardware most labs and companies don't have.</p>
+        <p>Large code models (LCMs) &mdash; CodeLlama, DeepSeek-Coder, CodeT5, StarCoder, and the rest of the family &mdash; have pushed code intelligence forward across nearly every software engineering task we care about. But getting these models to do something useful for <em>your</em> task usually means fine-tuning, and full fine-tuning is expensive: every weight is updated, every gradient is held in memory, and every task gets its own full copy of the model.</p>
 
-        <p>Parameter-efficient fine-tuning (PEFT) changes the contract. Instead of updating the whole model, we freeze it and update a small slice &mdash; either by injecting tiny new modules (adapters, prompts, prefixes), reparameterizing weight updates as low-rank matrices (LoRA, QLoRA), or selecting a sparse subset of existing parameters (BitFit). The hope: similar (or better) downstream quality at a small fraction of the compute, memory, and storage cost.</p>
+        <p>Parameter-efficient fine-tuning (PEFT) freezes most of the model and trains a small part instead. Figure 1 shows how. PEFT is well studied in NLP; this review maps how it is used for code.</p>
 
-        <p>The hope is well-supported in NLP. The question we wanted to answer is what the picture actually looks like in software engineering: which tasks have been studied, which models and methods are being used, and &mdash; honestly &mdash; whether PEFT holds up against full fine-tuning when applied to code.</p>
+        <figure class="pv-figure" id="fig-families">
+          <figcaption><strong>Figure 1.</strong> The PEFT families described in the paper, drawn on a simplified transformer.</figcaption>
+        </figure>
 
-        <!-- Section 2: What We Did -->
         <h2 id="what-we-did">2. What We Did: A Systematic Review</h2>
 
-        <p>We followed Kitchenham's guidelines for systematic literature reviews. We searched four major scholarly databases &mdash; <strong>IEEE Xplore</strong>, <strong>ACM Digital Library</strong>, <strong>Springer Link</strong>, and <strong>Google Scholar</strong> &mdash; using carefully constructed query strings combining PEFT terminology with software engineering and large-language-model keywords. We then applied multi-stage inclusion and exclusion criteria covering peer-review status, venue quality, and topical relevance.</p>
+        <p>We followed Kitchenham's guidelines for systematic literature reviews. We searched IEEE Xplore, the ACM Digital Library, Springer Link and Google Scholar for 2019&ndash;2025, with search strings that pair PEFT terms with all 23 task names from Watson et al.'s taxonomy of deep learning for software engineering. Preprint servers were left out of the database search.</p>
 
-        <p>Starting from <strong>1,146 candidate papers</strong>, the screening process narrowed the corpus down to <strong>28 peer-reviewed studies</strong> covering <strong>19 distinct SE tasks</strong>. The final set is concentrated in top venues: ICSE, FSE, ASE, TOSEM, TSE, NeurIPS, ACL, EMNLP, and similar.</p>
+        <figure class="pv-figure" id="fig-funnel">
+          <div class="pv-funnel">
+            <div class="pv-funnel-step"><div class="pv-stat-value" data-count="1146">1,146</div><div class="pv-stat-sub">records retrieved from the four databases</div></div>
+            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+            <div class="pv-funnel-step"><div class="pv-stat-value" data-count="26">26</div><div class="pv-stat-sub">left after the exclusion criteria: not about PEFT for SE tasks, not in a selected venue, or PEFT only as future work</div></div>
+            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+            <div class="pv-funnel-step"><div class="pv-stat-value" data-count="28">28</div><div class="pv-stat-sub">final set, after a manual check by two authors and backward snowballing, which added two highly cited arXiv papers</div></div>
+          </div>
+          <figcaption><strong>Figure 2.</strong> Study selection (Fig. 1 in the paper).</figcaption>
+        </figure>
 
-        <p>Three research questions structured the review:</p>
+        <figure class="pv-figure" id="fig-venues">
+          <figcaption><strong>Figure 3.</strong> Where the 28 papers were published (Fig. 2 in the paper). Venues come from CSRankings, plus software engineering journals and conferences it does not list, such as TOSEM, TSE, EMSE, MSR, SANER, ICPC and FORGE.</figcaption>
+        </figure>
+
+        <p>Three research questions structure the review:</p>
         <ul>
-          <li><strong>RQ1:</strong> Which SE tasks have been addressed using PEFT?</li>
-          <li><strong>RQ2:</strong> Which model architectures and PEFT methods have been studied?</li>
-          <li><strong>RQ3:</strong> How does PEFT compare to full fine-tuning in performance and efficiency?</li>
+          <li><strong>RQ1:</strong> Which software engineering tasks have been explored using PEFT methods?</li>
+          <li><strong>RQ2:</strong> Which deep learning models and architectures are commonly optimized with PEFT methods?</li>
+          <li><strong>RQ3:</strong> How do PEFT methods affect task performance and training efficiency compared with full fine-tuning?</li>
         </ul>
 
-        <div class="callout callout-insight">
-          <div class="callout-label">Why a systematic review</div>
-          <p>PEFT in SE is moving fast and the literature is fragmented across NLP, ML, and SE venues. A systematic review forces explicit search strings, explicit filters, and explicit accounting &mdash; so the patterns we report aren't cherry-picked from familiar papers, but the actual shape of the field as of submission.</p>
-        </div>
-
-        <!-- Section 3: RQ1 -->
         <h2 id="rq1">3. RQ1 &mdash; Which SE Tasks Use PEFT?</h2>
 
-        <p>Across the 28 studies, PEFT has been applied to <strong>19 distinct SE tasks</strong>, which split cleanly into two groups: <strong>12 generative tasks</strong>, where the model produces code or natural language, and <strong>7 non-generative tasks</strong>, which are typically classification or matching problems.</p>
+        <figure class="pv-figure" id="fig-tasks">
+          <figcaption><strong>Figure 4.</strong> Studies per task (Table 1 in the paper). Hover over or tap a bar for the task definition; the table view lists all of them.</figcaption>
+        </figure>
 
-        <p>The distribution is heavily skewed. <strong>Code Summarization</strong> is the most-studied target (~46.4% of studies, 13 papers), followed by <strong>Code Generation</strong> (~35.7%, 10 papers). About <strong>60.7%</strong> of the studies applied PEFT to more than one SE task &mdash; a healthy sign that researchers are treating PEFT as a general adaptation tool rather than a task-specific trick.</p>
+        <p>Code summarization and code generation lead by a wide margin, and 17 of the 28 studies apply PEFT to more than one task. Generative tasks split by what goes in and what comes out: code-to-code tasks such as translation, refinement and repair appear in 21 studies, code-to-text tasks in 16, and text-to-code tasks in 12. Almost all non-generative work is classification; code search is the only ranking task, and no study uses regression.</p>
 
-        <h3>Table 1 &mdash; Task Taxonomy</h3>
+        <figure class="pv-figure" id="fig-years">
+          <figcaption><strong>Figure 5.</strong> Task instances per year (Fig. 4 in the paper). Hover over or tap a segment to see its tasks.</figcaption>
+        </figure>
 
-        <table>
-          <thead>
-            <tr>
-              <th style="width:22%">Task</th>
-              <th>Description</th>
-              <th style="width:14%">Type</th>
-              <th style="width:10%">Studies</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>Code Summarization</td><td>Generate a natural-language description of a code snippet</td><td>Generative</td><td>13</td></tr>
-            <tr><td>Code Generation</td><td>Produce code from a natural-language specification</td><td>Generative</td><td>10</td></tr>
-            <tr><td>Code Translation</td><td>Translate code from one programming language to another</td><td>Generative</td><td>Multiple</td></tr>
-            <tr><td>Automated Program Repair (APR)</td><td>Generate a fix for a buggy program</td><td>Generative</td><td>Multiple</td></tr>
-            <tr><td>Code Refinement</td><td>Improve existing code (style, structure, correctness)</td><td>Generative</td><td>Multiple</td></tr>
-            <tr><td>Commit Message Generation</td><td>Produce a commit message describing a code change</td><td>Generative</td><td>Multiple</td></tr>
-            <tr><td>Code Review Generation</td><td>Generate review comments for proposed changes</td><td>Generative</td><td>Multiple</td></tr>
-            <tr><td>Code Completion</td><td>Predict the next token(s) of a partially written program</td><td>Generative</td><td>Multiple</td></tr>
-            <tr><td>Unit Test Generation</td><td>Generate unit tests for a given function or class</td><td>Generative</td><td>Multiple</td></tr>
-            <tr><td>Just-In-Time Comment Update (JITCU)</td><td>Update inline comments when the surrounding code changes</td><td>Generative</td><td>Multiple</td></tr>
-            <tr><td>Method Name Recommendation</td><td>Suggest a name for a method based on its body</td><td>Generative</td><td>Multiple</td></tr>
-            <tr><td>Protocol Buffer Transformation</td><td>Translate between Protocol Buffer schemas/representations</td><td>Generative</td><td>Multiple</td></tr>
-            <tr><td>Clone Detection</td><td>Determine whether two snippets are semantically equivalent</td><td>Non-generative</td><td>Multiple</td></tr>
-            <tr><td>Defect Detection</td><td>Classify code as buggy or correct</td><td>Non-generative</td><td>Multiple</td></tr>
-            <tr><td>Code Search</td><td>Retrieve code matching a natural-language query</td><td>Non-generative</td><td>Multiple</td></tr>
-            <tr><td>Cloze Test</td><td>Predict masked tokens in a code sequence</td><td>Non-generative</td><td>Multiple</td></tr>
-            <tr><td>Code Review (classification)</td><td>Classify a review comment or accept/reject a change</td><td>Non-generative</td><td>Multiple</td></tr>
-            <tr><td>Header File Prediction</td><td>Predict the correct header file(s) for a piece of code</td><td>Non-generative</td><td>Multiple</td></tr>
-            <tr><td>Method Name Consistency Check</td><td>Decide whether a method name matches its body</td><td>Non-generative</td><td>Multiple</td></tr>
-          </tbody>
-        </table>
-        <p class="table-caption">Table 1. The 19 SE tasks covered by the 28 reviewed studies, categorized as generative (12) or non-generative (7).</p>
+        <h2 id="rq2">4. RQ2 &mdash; Which Models and PEFT Methods?</h2>
 
-        <!-- Section 4: RQ2 -->
-        <h2 id="rq2">4. RQ2 &mdash; Which Architectures and PEFT Methods?</h2>
+        <p><strong>Architectures.</strong> Encoder-decoder models appear in 29 task instances across 12 studies, encoder-only models in 22 across 10, and decoder-only models in 19 across 12. CodeT5 is the most adapted single model (19 task instances in 8 studies), followed by GraphCodeBERT, CodeBERT, PLBART and UniXcoder. Decoder-only models such as the CodeLlama family appear only in generative tasks.</p>
 
-        <h3>Architectures</h3>
+        <p><strong>Methods.</strong> Base LoRA is the most used technique (29 task instances), followed by the adapter family (23), Prompt Tuning (14), Prefix Tuning (13) and P-Tuning (7).</p>
 
-        <p>The architecture distribution across reviewed studies looks like this:</p>
-        <ul>
-          <li><strong>Encoder-decoder models are most prevalent</strong>: 29 task instances across 12 studies. CodeT5 alone is adapted <strong>19 times across 8 studies</strong>, making it the single most frequently fine-tuned model in the corpus.</li>
-          <li><strong>Encoder-only models</strong>: 22 task instances across 10 studies. Largely CodeBERT, GraphCodeBERT, and similar.</li>
-          <li><strong>Decoder-only models</strong>: 19 task instances across 12 studies. The CodeLlama family shows particularly fast-growing adoption, and decoder-only models appear <strong>exclusively in generative tasks</strong> &mdash; an architectural fit, but also a real gap when it comes to classification-style SE problems.</li>
-        </ul>
+        <figure class="pv-figure" id="fig-heatmap">
+          <figcaption><strong>Figure 6.</strong> Number of studies that use each PEFT method for each task (Fig. 5 in the paper). Empty cells mean no study.</figcaption>
+        </figure>
 
-        <h3>PEFT Methods</h3>
+        <p><strong>How LoRA is configured.</strong> Generative tasks typically use rank 8 or 16 on the attention layers, or on attention and feed-forward layers. Non-generative tasks often use lower ranks (1, 4 or 8), keeping the trained share well below 1%, except for FF-LoRA set-ups that adapt only the feed-forward layers with ranks of 256 or 512. Adapter studies often leave out their configuration, which makes them hard to compare.</p>
 
-        <p>On the method side, four families dominate the field, with one clearly leading:</p>
-        <ul>
-          <li><strong>Base LoRA</strong> is the dominant PEFT technique with <strong>29 SE task instances</strong>.</li>
-          <li><strong>Adapter family</strong> (Base Adapter, L-Adapter, T-Adapter, etc.): <strong>23 task instances</strong>.</li>
-          <li><strong>Prompt Tuning</strong>: <strong>14 task instances</strong>.</li>
-          <li><strong>Prefix Tuning</strong>: <strong>13 task instances</strong>.</li>
-        </ul>
-
-        <h3>Figure 3 &mdash; PEFT Taxonomy</h3>
-
-        <p>The reviewed PEFT methods organize into four structural families. Where each method appears, it is mapped to the tasks for which it has been used in the reviewed corpus:</p>
-
-        <div class="taxonomy">
-
-          <div class="taxonomy-card">
-            <h4>Additive</h4>
-            <ul>
-              <li><code>Base Adapter</code> &mdash; summarization, generation, translation, APR, defect &amp; clone detection</li>
-              <li><code>L-Adapter</code> &mdash; cross-lingual summarization, translation, code review</li>
-              <li><code>T-Adapter</code> &mdash; task-specific adapters for summarization, generation, search</li>
-              <li><code>Prompt Tuning</code> &mdash; generation, summarization, defect detection</li>
-              <li><code>Prefix Tuning</code> &mdash; generation, summarization, refinement</li>
-              <li><code>P-Tuning</code> &mdash; generation, classification</li>
-              <li><code>Pass-Tuning</code> &mdash; structure-aware code understanding tasks</li>
-              <li><code>(IA)<sup>3</sup></code> &mdash; lightweight adaptation for generative tasks</li>
-            </ul>
-          </div>
-
-          <div class="taxonomy-card">
-            <h4>Reparameterized</h4>
-            <ul>
-              <li><code>Base LoRA</code> &mdash; generation, summarization, translation, APR, completion, refinement, review generation, clone &amp; defect detection</li>
-              <li><code>QLoRA</code> &mdash; generation, summarization, APR (with quantized base models)</li>
-              <li><code>FF-LoRA</code> &mdash; feed-forward-targeted LoRA for generative tasks</li>
-              <li><code>AdaLoRA</code> &mdash; adaptive-rank LoRA, only sparsely evaluated</li>
-            </ul>
-          </div>
-
-          <div class="taxonomy-card">
-            <h4>Selective</h4>
-            <ul>
-              <li><code>BitFit</code> &mdash; bias-only tuning; sparsely evaluated in SE</li>
-              <li><code>Telly-K</code> &mdash; layer-selective freezing for code understanding</li>
-            </ul>
-          </div>
-
-          <div class="taxonomy-card">
-            <h4>Hybrid</h4>
-            <ul>
-              <li><code>MAM</code> &mdash; mixed adapter + prefix configurations</li>
-              <li><code>L-Adapter + T-Adapter</code> &mdash; cross-lingual + task adapters stacked</li>
-              <li><code>FF-LoRA + Adapter</code> &mdash; combined reparameterized + additive</li>
-              <li><code>L-Adapter + NER-Adapter + AdapterFusion</code> &mdash; multi-adapter fusion for code review</li>
-            </ul>
-          </div>
-
-        </div>
-        <p class="table-caption">Figure 3. PEFT method taxonomy with SE tasks mapped to each method, organized into the four structural families.</p>
-
-        <div class="callout callout-detail">
-          <div class="callout-label">Pattern worth noting</div>
-          <p>Reparameterized methods &mdash; LoRA and its variants &mdash; are the most-used and best-performing family in the reviewed corpus. Additive methods (adapters, prompts, prefixes) are well-represented but spread more thinly across tasks. Selective methods (BitFit, Telly-K) are essentially under-evaluated in SE.</p>
-        </div>
-
-        <!-- Section 5: RQ3 -->
         <h2 id="rq3">5. RQ3 &mdash; How Does PEFT Compare to Full Fine-Tuning?</h2>
 
-        <p>This is the question every practitioner actually cares about: does PEFT match full fine-tuning on quality, and does it actually save anything in practice?</p>
+        <p>Only 20 of the 28 studies compare a PEFT method with full fine-tuning of the same base model.</p>
 
-        <p>For the <strong>generative tasks</strong>, the comparisons are encouraging:</p>
-        <ul>
-          <li>~<strong>72%</strong> of comparisons reported performance <em>improvements</em> over full fine-tuning.</li>
-          <li>Over <strong>54%</strong> reported efficiency gains as well (lower memory, fewer trainable parameters, faster training, or smaller checkpoints).</li>
-        </ul>
+        <figure class="pv-figure" id="fig-results">
+          <figcaption><strong>Figure 7.</strong> Best-performing PEFT method per study and task, against full fine-tuning of the same model (Table 6 in the paper). The arrow shows performance; E&uarr; and E&darr; mark training or memory efficiency where the study reports it. Hover over or tap an entry for the full task name.</figcaption>
+        </figure>
 
-        <p>For the <strong>non-generative tasks</strong>:</p>
-        <ul>
-          <li>~<strong>62%</strong> reported performance improvements.</li>
-          <li>~<strong>50%</strong> showed efficiency gains.</li>
-        </ul>
+        <p>LoRA-based methods are the most common winners on generative tasks, and every QLoRA entry reports both better performance and better efficiency. Code translation may be less suited to PEFT: Base Adapter, FF-LoRA + AT and MAM all translate worse than full fine-tuning, and only Prompt Tuning translates better. Among non-generative tasks, defect detection is better in three of its four entries and on par in the fourth, while code clone detection is split evenly between better-or-similar and worse. Prompt Tuning reports better performance in every entry it has.</p>
 
-        <p>Across both categories, <strong>LoRA-based methods (Base LoRA and QLoRA) were consistently the strongest performers</strong>. They tend to match or beat full fine-tuning while training on the order of one to two percent of the original model's parameters.</p>
+        <p>One study (Wang et al.) adds a caution: PEFT holds up on public code but drops markedly on private codebases, where the needed knowledge is far from the pre-training data.</p>
 
-        <h3>Table 6 &mdash; Best-performing PEFT Methods vs. Full Fine-Tuning</h3>
+        <h2 id="next">6. What Future Work Should Do</h2>
 
-        <table>
-          <thead>
-            <tr>
-              <th style="width:30%">Task category / task</th>
-              <th>Best-performing PEFT method(s)</th>
-              <th style="width:18%">Performance</th>
-              <th style="width:18%">Efficiency</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td colspan="4" style="background:rgba(251,191,36,0.06) !important; color:#fbbf24 !important; font-weight:600;">Generative tasks</td></tr>
-            <tr><td>Code Summarization</td><td>Base LoRA, Adapter family</td><td><span class="badge-improved">Improved</span></td><td><span class="badge-gain">Gain</span></td></tr>
-            <tr><td>Code Generation</td><td>Base LoRA, QLoRA</td><td><span class="badge-improved">Improved</span></td><td><span class="badge-gain">Gain</span></td></tr>
-            <tr><td>Code Translation</td><td>Base LoRA, L-Adapter</td><td><span class="badge-improved">Improved</span></td><td><span class="badge-mixed">Mixed</span></td></tr>
-            <tr><td>Automated Program Repair</td><td>Base LoRA, QLoRA</td><td><span class="badge-improved">Improved</span></td><td><span class="badge-gain">Gain</span></td></tr>
-            <tr><td>Code Refinement</td><td>Base LoRA, Prefix Tuning</td><td><span class="badge-similar">Similar</span></td><td><span class="badge-gain">Gain</span></td></tr>
-            <tr><td>Commit Message Generation</td><td>Adapter family</td><td><span class="badge-improved">Improved</span></td><td><span class="badge-gain">Gain</span></td></tr>
-            <tr><td>Code Review Generation</td><td>Adapter Fusion (hybrid)</td><td><span class="badge-improved">Improved</span></td><td><span class="badge-gain">Gain</span></td></tr>
-            <tr><td>Code Completion</td><td>Base LoRA</td><td><span class="badge-improved">Improved</span></td><td><span class="badge-gain">Gain</span></td></tr>
-            <tr><td>Unit Test Generation</td><td>Base LoRA</td><td><span class="badge-similar">Similar</span></td><td><span class="badge-gain">Gain</span></td></tr>
-            <tr><td>JITCU / Method Name Rec. / Protocol Buffer</td><td>Adapter family, Prompt Tuning</td><td><span class="badge-improved">Improved</span></td><td><span class="badge-mixed">Mixed</span></td></tr>
-            <tr><td colspan="4" style="background:rgba(251,191,36,0.06) !important; color:#fbbf24 !important; font-weight:600;">Non-generative tasks</td></tr>
-            <tr><td>Clone Detection</td><td>Base LoRA, Adapter family</td><td><span class="badge-improved">Improved</span></td><td><span class="badge-gain">Gain</span></td></tr>
-            <tr><td>Defect Detection</td><td>Base LoRA, Prompt Tuning</td><td><span class="badge-improved">Improved</span></td><td><span class="badge-gain">Gain</span></td></tr>
-            <tr><td>Code Search</td><td>Adapter family, Pass-Tuning</td><td><span class="badge-improved">Improved</span></td><td><span class="badge-mixed">Mixed</span></td></tr>
-            <tr><td>Cloze Test</td><td>Telly-K, Adapter family</td><td><span class="badge-similar">Similar</span></td><td><span class="badge-gain">Gain</span></td></tr>
-            <tr><td>Code Review (classification)</td><td>Adapter Fusion (hybrid)</td><td><span class="badge-improved">Improved</span></td><td><span class="badge-gain">Gain</span></td></tr>
-            <tr><td>Header File Prediction / Method Name Check</td><td>Base LoRA, Adapter family</td><td><span class="badge-similar">Similar</span></td><td><span class="badge-gain">Gain</span></td></tr>
-          </tbody>
-        </table>
-        <p class="table-caption">Table 6. Best-performing PEFT methods reported across reviewed studies, with directional indicators relative to full fine-tuning. <span class="badge-improved">Improved</span> = at least one reported metric exceeded full FT; <span class="badge-similar">Similar</span> = comparable; <span class="badge-mixed">Mixed</span> = setup-dependent. LoRA-based methods dominate the &ldquo;best method&rdquo; column.</p>
+        <p>The paper closes with six steps for future studies, each with a note on what to report:</p>
 
-        <div class="callout callout-warning">
-          <div class="callout-label">Important caveat</div>
-          <p>About <strong>29% of the reviewed works did not include a direct comparison with full fine-tuning</strong>. That is a meaningful blind spot: when nearly a third of the literature skips the head-to-head, the &ldquo;PEFT matches or beats full FT&rdquo; story is statistically supported but methodologically thinner than it should be. Future work should make full-FT baselines mandatory rather than optional.</p>
-        </div>
-
-        <!-- Section 6: What's Still Missing -->
-        <h2 id="missing">6. What's Still Missing</h2>
-
-        <p>The same review that shows where PEFT in SE is strong also shows, very clearly, where it isn't yet:</p>
-
-        <ul>
-          <li><strong>Method coverage gaps.</strong> <code>AdaLoRA</code>, <code>P-Tuning</code>, and <code>BitFit</code> are largely unevaluated in SE despite being well-studied in NLP. We don't yet know whether their NLP wins transfer to code.</li>
-          <li><strong>Task coverage gaps.</strong> Software testing, software documentation generation, and refactoring are notably underexplored. The corpus skews heavily toward summarization and generation, and away from large parts of the SE lifecycle.</li>
-          <li><strong>Architectural asymmetry.</strong> Decoder-only LCMs are used <em>only</em> for generative tasks in the reviewed corpus &mdash; their potential for classification/matching SE tasks is unexamined.</li>
-          <li><strong>Benchmark fragmentation.</strong> Studies often use different datasets, metrics, and base models, which makes apples-to-apples comparison genuinely hard. Standardized PEFT-for-SE benchmarks would do a lot of good here.</li>
-        </ul>
-
-        <p>Section 6 of the paper sketches a six-step roadmap for future work that we think the community should treat as a checklist:</p>
-
-        <ol>
-          <li>Cover the under-evaluated PEFT methods (AdaLoRA, P-Tuning, BitFit) on standard SE tasks.</li>
-          <li>Extend PEFT studies to under-explored SE tasks: testing, documentation, refactoring, security.</li>
-          <li>Evaluate decoder-only LCMs on non-generative SE tasks, not just generative ones.</li>
-          <li>Make full-fine-tuning baselines mandatory in PEFT-for-SE evaluations.</li>
-          <li>Standardize benchmarks, datasets, and efficiency reporting across studies.</li>
-          <li>Investigate hybrid configurations more systematically &mdash; the early hybrid results (e.g., AdapterFusion variants) suggest there is real signal there.</li>
+        <ol class="pv-steps">
+          <li><i class="fas fa-compass" aria-hidden="true"></i><strong>Cover the missing tasks.</strong> Software testing, documentation generation, code quality assessment, API recommendation, automated refactoring and requirements analysis are barely studied. A single PEFT set-up that works across tasks is also worth trying.</li>
+          <li><i class="fas fa-cubes" aria-hidden="true"></i><strong>Match the base model to the task.</strong> Justify the architecture, model size and pre-training data; larger models like StarCoder-15B and DeepSeek-Coder-33B are still underused.</li>
+          <li><i class="fas fa-layer-group" aria-hidden="true"></i><strong>Try more PEFT methods.</strong> Several methods still have no head-to-head result (Figure 7), newer LoRA variants such as LoRA-pro and LoRA-GA are untried in SE, and hybrids like LoRA + Prefix Tuning deserve a closer look.</li>
+          <li><i class="fas fa-tachometer-alt" aria-hidden="true"></i><strong>Measure more than accuracy.</strong> Report memory and latency against full fine-tuning, generalization across tasks and languages, low-resource behavior, and ablations.</li>
+          <li><i class="fas fa-box-open" aria-hidden="true"></i><strong>Make results reproducible.</strong> Share scripts, data and checkpoints, document hardware and training steps, and use shared benchmarks so methods can be compared side by side.</li>
+          <li><i class="fas fa-lock" aria-hidden="true"></i><strong>Study domain-specific knowledge.</strong> Separate public from private data in evaluations, report how far the data shifts from pre-training, and look for PEFT variants that can learn knowledge the base model never saw.</li>
         </ol>
 
-        <!-- Section 7: Bottom Line -->
-        <h2 id="bottom-line">7. Bottom Line</h2>
+        <h2 id="meaning">7. What It Means</h2>
 
-        <p>PEFT in software engineering is not a workaround for not having enough GPUs. The reviewed evidence makes that clear: across 28 studies, 19 SE tasks, and four method families, PEFT consistently matches or improves on full fine-tuning while training a tiny fraction of the parameters. <strong>It's a robust optimization paradigm</strong>, not a compromise &mdash; and as LCMs continue to grow, it will be the default way to adapt them to SE tasks, not the exception.</p>
+        <p>For practitioners, the paper names Base LoRA as the first choice when results need to match full fine-tuning. For code generation the paper recommends decoder-only models, and for a mix of analysis and generation, encoder-decoder models. Generative tasks show the clearest return on PEFT, so they are the place to start.</p>
 
-        <p>If you're starting an SE project on top of an LCM today, the safest, most-evidenced first move based on this review is straightforward: <strong>start with Base LoRA or QLoRA on top of a CodeT5 or CodeLlama-family base model, and only deviate when you have a specific reason to</strong>. Everything else in the design space &mdash; adapters, prompts, prefixes, hybrids &mdash; is worth exploring, but is more sparsely evaluated in SE so far.</p>
+        <p>More broadly, the review argues that PEFT is not just a workaround for scarce GPUs but a practical way to adapt large code models in its own right.</p>
 
         <div class="paper-links">
           <a href="https://doi.org/10.1145/3796522" target="_blank" rel="noopener noreferrer"><i class="fas fa-book-open"></i>&nbsp; Read the full paper (ACM DL)</a>
@@ -591,6 +378,8 @@
   <script src="/assets/js/bootstrap.min.js" type="text/javascript"></script>
   <script src="/assets/js/mdb.min.js" type="text/javascript"></script>
   <script src="/assets/js/common.js"></script>
+  <script src="/assets/js/paper-viz.js"></script>
+  <script src="/assets/js/peft-review-figures.js"></script>
 
   <!-- Scrolling Progress Bar -->
   <script type="text/javascript">
